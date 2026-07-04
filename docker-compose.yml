@@ -1,0 +1,23 @@
+services:
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: aegis-mqtt
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./infra/docker/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  api:
+    image: python:3.11-slim
+    container_name: aegis-api
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: sh -c "pip install -e . && uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --reload"
+    ports:
+      - "8000:8000"
+    environment:
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+    depends_on:
+      - mqtt
