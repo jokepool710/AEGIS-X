@@ -27,11 +27,13 @@ services:
     working_dir: /workspace
     volumes:
       - ./:/workspace
+      - telemetry_data:/workspace/data
     command: sh -c "pip install -e . && python -m collectors.telemetry.mqtt_collector"
     environment:
       MQTT_HOST: mqtt
       MQTT_PORT: 1883
       MQTT_TOPIC: aegis/telemetry/#
+      TELEMETRY_DB_PATH: /workspace/data/aegis_telemetry.db
     depends_on:
       - mqtt
     restart: on-failure
@@ -42,11 +44,16 @@ services:
     working_dir: /workspace
     volumes:
       - ./:/workspace
+      - telemetry_data:/workspace/data
     command: sh -c "pip install -e . && uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --reload"
     ports:
       - "8000:8000"
     environment:
       MQTT_HOST: mqtt
       MQTT_PORT: 1883
+      TELEMETRY_DB_PATH: /workspace/data/aegis_telemetry.db
     depends_on:
       - mqtt
+
+volumes:
+  telemetry_data:
