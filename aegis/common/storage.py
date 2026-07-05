@@ -38,12 +38,8 @@ class TelemetryStore:
                 )
                 """
             )
-            connection.execute(
-                "CREATE INDEX IF NOT EXISTS idx_telemetry_device_time ON telemetry_events(device_id, event_timestamp)"
-            )
-            connection.execute(
-                "CREATE INDEX IF NOT EXISTS idx_telemetry_metric_time ON telemetry_events(metric, event_timestamp)"
-            )
+            connection.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_device_time ON telemetry_events(device_id, event_timestamp)")
+            connection.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_metric_time ON telemetry_events(metric, event_timestamp)")
 
     def insert(self, event: TelemetryEvent) -> bool:
         try:
@@ -56,18 +52,9 @@ class TelemetryStore:
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """,
                     (
-                        event.event_id,
-                        event.device_id,
-                        event.device_type,
-                        event.site_id,
-                        event.timestamp.isoformat(),
-                        event.sequence,
-                        event.metric,
-                        event.value,
-                        event.unit,
-                        event.quality,
-                        event.source_topic,
-                        event.ingested_at.isoformat(),
+                        event.event_id, event.device_id, event.device_type, event.site_id,
+                        event.timestamp.isoformat(), event.sequence, event.metric, event.value,
+                        event.unit, event.quality, event.source_topic, event.ingested_at.isoformat(),
                     ),
                 )
             return True
@@ -78,3 +65,24 @@ class TelemetryStore:
         with self._connect() as connection:
             row = connection.execute("SELECT COUNT(*) AS count FROM telemetry_events").fetchone()
             return int(row["count"])
+
+    def health_stats(self) -> dict[str, int | str | None]:
+        with self._connect() as connection:
+            row = connection.execute(
+                """
+                SELECT
+                    COUNT(*) AS stored_events,
+                    COUNT(DISTINCT device_id) AS active_devices,
+                    COUNT(DISTINCT metric) AS metric_streams,
+                    MIN(ingested_at) AS first_ingested_at,
+                    MAX(ingested_at) AS last_ingested_at
+                FROM telemetry_events
+                """
+            ).fetchone()
+            return {
+                "stored_events": int(row["stored_events"]),
+                "active_devices": int(row["active_devices"]),
+                "metric_streams": int(row["metric_streams"]),
+                "first_ingested_at": row["first_ingested_at"],
+                "last_ingested_at": row["last_ingested_at"],
+            }
