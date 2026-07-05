@@ -7,6 +7,9 @@ import paho.mqtt.client as mqtt
 from pydantic import ValidationError
 
 from aegis.common.models import TelemetryEvent
+from aegis.common.storage import TelemetryStore
+
+store: TelemetryStore | None = None
 
 
 def normalize(topic: str, payload: bytes) -> TelemetryEvent:
@@ -36,12 +39,23 @@ def on_connect(client: mqtt.Client, userdata: object, flags: object, reason_code
 def on_message(client: mqtt.Client, userdata: object, message: mqtt.MQTTMessage) -> None:
     try:
         event = normalize(message.topic, message.payload)
-        print(event.model_dump_json())
+        if store is None:
+            raise RuntimeError("telemetry store is not initialized")
+        inserted = store.insert(event)
+        if inserted:
+            print(f"stored {event.model_dump_json()}")
+        else:
+            print(
+                f"duplicate rejected device={event.device_id} "
+                f"sequence={event.sequence} metric={event.metric}"
+            )
     except (json.JSONDecodeError, UnicodeDecodeError, KeyError, ValidationError) as exc:
         print(f"rejected topic={message.topic}: {exc}")
 
 
 def main() -> None:
+    global store
+    store = TelemetryStore()
     host = os.getenv("MQTT_HOST", "localhost")
     port = int(os.getenv("MQTT_PORT", "1883"))
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="aegis-telemetry-collector")
