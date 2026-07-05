@@ -29,7 +29,7 @@ AEGIS-X is a research-driven platform for attack emulation, multimodal anomaly d
 ## Roadmap
 
 - [x] Phase 0 — Foundation and architecture
-- [ ] Phase 1 — MQTT simulator and telemetry ingestion
+- [x] Phase 1 — MQTT simulator and telemetry ingestion
 - [ ] Phase 2 — Baseline anomaly detection and alert API
 - [ ] Phase 3 — Operator dashboard and experiment harness
 - [ ] Phase 4 — Multimodal event fusion
