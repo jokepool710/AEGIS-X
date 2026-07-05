@@ -6,12 +6,14 @@ from datetime import datetime, timezone
 import paho.mqtt.client as mqtt
 from pydantic import ValidationError
 
+from aegis.common.metrics import IngestionMetrics
 from aegis.common.models import TelemetryEvent
 from aegis.common.sequence import SequenceTracker
 from aegis.common.storage import TelemetryStore
 
 store: TelemetryStore | None = None
 sequence_tracker = SequenceTracker()
+metrics = IngestionMetrics()
 
 
 def normalize(topic: str, payload: bytes) -> TelemetryEvent:
@@ -39,6 +41,7 @@ def on_connect(client: mqtt.Client, userdata: object, flags: object, reason_code
 
 
 def on_message(client: mqtt.Client, userdata: object, message: mqtt.MQTTMessage) -> None:
+    metrics.record_received()
     try:
         event = normalize(message.topic, message.payload)
         if store is None:
@@ -46,24 +49,25 @@ def on_message(client: mqtt.Client, userdata: object, message: mqtt.MQTTMessage)
 
         inserted = store.insert(event)
         if not inserted:
-            print(
-                f"duplicate rejected device={event.device_id} "
-                f"sequence={event.sequence} metric={event.metric}"
-            )
+            metrics.record_duplicate()
+            print(f"duplicate rejected device={event.device_id} sequence={event.sequence} metric={event.metric}")
             return
 
+        metrics.record_stored()
         gap = sequence_tracker.observe(event.device_id, event.metric, event.sequence)
         if gap is not None:
+            metrics.record_gap(gap.missing_count)
             print(
                 "sequence_gap "
                 f"device={gap.device_id} metric={gap.metric} "
                 f"previous={gap.previous_sequence} current={gap.current_sequence} "
-                f"missing={gap.missing_from}-{gap.missing_to} "
-                f"count={gap.missing_count}"
+                f"missing={gap.missing_from}-{gap.missing_to} count={gap.missing_count}"
             )
 
         print(f"stored {event.model_dump_json()}")
+        print(f"ingestion_metrics {metrics.snapshot()}")
     except (json.JSONDecodeError, UnicodeDecodeError, KeyError, ValidationError) as exc:
+        metrics.record_rejected()
         print(f"rejected topic={message.topic}: {exc}")
 
 
