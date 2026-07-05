@@ -7,9 +7,11 @@ import paho.mqtt.client as mqtt
 from pydantic import ValidationError
 
 from aegis.common.models import TelemetryEvent
+from aegis.common.sequence import SequenceTracker
 from aegis.common.storage import TelemetryStore
 
 store: TelemetryStore | None = None
+sequence_tracker = SequenceTracker()
 
 
 def normalize(topic: str, payload: bytes) -> TelemetryEvent:
@@ -41,14 +43,26 @@ def on_message(client: mqtt.Client, userdata: object, message: mqtt.MQTTMessage)
         event = normalize(message.topic, message.payload)
         if store is None:
             raise RuntimeError("telemetry store is not initialized")
+
         inserted = store.insert(event)
-        if inserted:
-            print(f"stored {event.model_dump_json()}")
-        else:
+        if not inserted:
             print(
                 f"duplicate rejected device={event.device_id} "
                 f"sequence={event.sequence} metric={event.metric}"
             )
+            return
+
+        gap = sequence_tracker.observe(event.device_id, event.metric, event.sequence)
+        if gap is not None:
+            print(
+                "sequence_gap "
+                f"device={gap.device_id} metric={gap.metric} "
+                f"previous={gap.previous_sequence} current={gap.current_sequence} "
+                f"missing={gap.missing_from}-{gap.missing_to} "
+                f"count={gap.missing_count}"
+            )
+
+        print(f"stored {event.model_dump_json()}")
     except (json.JSONDecodeError, UnicodeDecodeError, KeyError, ValidationError) as exc:
         print(f"rejected topic={message.topic}: {exc}")
 
