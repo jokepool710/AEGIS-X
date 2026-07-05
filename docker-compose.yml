@@ -7,6 +7,35 @@ services:
     volumes:
       - ./infra/docker/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
 
+  simulator:
+    image: python:3.11-slim
+    container_name: aegis-simulator
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: sh -c "pip install -e . && python -m cyber_range.iot.sensor_simulator --interval 1 --anomaly-rate 0.03"
+    environment:
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+    depends_on:
+      - mqtt
+    restart: on-failure
+
+  collector:
+    image: python:3.11-slim
+    container_name: aegis-collector
+    working_dir: /workspace
+    volumes:
+      - ./:/workspace
+    command: sh -c "pip install -e . && python -m collectors.telemetry.mqtt_collector"
+    environment:
+      MQTT_HOST: mqtt
+      MQTT_PORT: 1883
+      MQTT_TOPIC: aegis/telemetry/#
+    depends_on:
+      - mqtt
+    restart: on-failure
+
   api:
     image: python:3.11-slim
     container_name: aegis-api
