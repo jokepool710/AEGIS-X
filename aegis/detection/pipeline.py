@@ -27,10 +27,13 @@ class DetectionResult:
 class DetectionPipeline:
     def __init__(self, window_size: int = 60, warmup: int = 20, threshold: float = 0.70,
                  retrain_interval: int = 20, score_weights: ScoreWeights | None = None,
-                 agreement_bonus: float = 0.08) -> None:
+                 agreement_bonus: float = 0.08, enable_temporal: bool = True,
+                 enable_contextual: bool = True) -> None:
         self.window_size = window_size
         self.warmup = warmup
         self.threshold = threshold
+        self.enable_temporal = enable_temporal
+        self.enable_contextual = enable_contextual
         self.windows: dict[tuple[str, str], deque[float]] = defaultdict(lambda: deque(maxlen=window_size))
         self.ewma: dict[tuple[str, str], float] = {}
         self.stream_event_counts: dict[tuple[str, str], int] = defaultdict(int)
@@ -67,11 +70,11 @@ class DetectionPipeline:
             key=key, history=history, current_value=event.value, sample_count=event_count
         )
         isolation_score = self._clamp(0.5 - decision)
-        temporal = self.temporal_detector.score(history, event.value)
-        contextual = self.slow_burn_detector.score(history, event.value)
+        temporal_score = self.temporal_detector.score(history, event.value).score if self.enable_temporal else 0.0
+        contextual_score = self.slow_burn_detector.score(history, event.value).score if self.enable_contextual else 0.0
         calibrated = self.score_calibrator.calibrate(
             z_score=z_score, ewma_score=ewma_score, isolation_score=isolation_score,
-            temporal_score=temporal.score, contextual_score=contextual.score,
+            temporal_score=temporal_score, contextual_score=contextual_score,
         )
 
         window.append(event.value)
@@ -79,5 +82,5 @@ class DetectionPipeline:
         return DetectionResult(
             z_score, ewma_score, isolation_score, calibrated.unified_score,
             calibrated.anomalous, event_count, features, cached_model.generation,
-            calibrated.severity, temporal.score, contextual.score,
+            calibrated.severity, temporal_score, contextual_score,
         )
