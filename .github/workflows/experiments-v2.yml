@@ -1,0 +1,29 @@
+name: Baseline V2 Detection Experiments
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  baseline-v2-experiments:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Run full 162-run Baseline v2 experiment matrix
+        run: python scripts/run_detection_experiments.py
+      - name: Print aggregate summary
+        run: cat artifacts/evaluation/experiment_summary.csv
+      - name: Upload Baseline v2 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: baseline-v2-experiment-results
+          path: artifacts/evaluation/
+          retention-days: 30
