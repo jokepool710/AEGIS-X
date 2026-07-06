@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from aegis.common.models import TelemetryEvent
 from aegis.detection.features import FeatureExtractor, WindowFeatures
 from aegis.detection.model_cache import IsolationForestModelCache
+from aegis.detection.scoring import ScoreWeights, UnifiedScoreCalibrator
 
 
 @dataclass(frozen=True)
@@ -16,6 +17,7 @@ class DetectionResult:
     sample_count: int
     features: WindowFeatures
     model_generation: int
+    severity: str
 
 
 class DetectionPipeline:
@@ -25,6 +27,8 @@ class DetectionPipeline:
         warmup: int = 20,
         threshold: float = 0.70,
         retrain_interval: int = 20,
+        score_weights: ScoreWeights | None = None,
+        agreement_bonus: float = 0.08,
     ) -> None:
         self.window_size = window_size
         self.warmup = warmup
@@ -33,8 +37,14 @@ class DetectionPipeline:
             lambda: deque(maxlen=window_size)
         )
         self.ewma: dict[tuple[str, str], float] = {}
+        self.stream_event_counts: dict[tuple[str, str], int] = defaultdict(int)
         self.feature_extractor = FeatureExtractor()
         self.model_cache = IsolationForestModelCache(retrain_interval=retrain_interval)
+        self.score_calibrator = UnifiedScoreCalibrator(
+            weights=score_weights,
+            threshold=threshold,
+            agreement_bonus=agreement_bonus,
+        )
 
     @staticmethod
     def _clamp(value: float) -> float:
@@ -42,6 +52,8 @@ class DetectionPipeline:
 
     def process(self, event: TelemetryEvent) -> DetectionResult:
         key = (event.device_id, event.metric)
+        self.stream_event_counts[key] += 1
+        event_count = self.stream_event_counts[key]
         window = self.windows[key]
         history = list(window)
         features = self.feature_extractor.extract(history, event.value)
@@ -54,7 +66,7 @@ class DetectionPipeline:
                 else 0.2 * event.value + 0.8 * self.ewma[key]
             )
             return DetectionResult(
-                0.0, 0.0, 0.0, 0.0, False, len(window), features, 0
+                0.0, 0.0, 0.0, 0.0, False, event_count, features, 0, "normal"
             )
 
         std = features.std or 1e-9
@@ -69,14 +81,15 @@ class DetectionPipeline:
             key=key,
             history=history,
             current_value=event.value,
-            sample_count=len(history),
+            sample_count=event_count,
         )
         isolation_score = self._clamp(0.5 - decision)
 
-        unified = self._clamp(
-            0.35 * z_score + 0.25 * ewma_score + 0.40 * isolation_score
+        calibrated = self.score_calibrator.calibrate(
+            z_score=z_score,
+            ewma_score=ewma_score,
+            isolation_score=isolation_score,
         )
-        anomalous = unified >= self.threshold
 
         window.append(event.value)
         self.ewma[key] = 0.2 * event.value + 0.8 * previous_ewma
@@ -84,9 +97,10 @@ class DetectionPipeline:
             z_score,
             ewma_score,
             isolation_score,
-            unified,
-            anomalous,
-            len(window),
+            calibrated.unified_score,
+            calibrated.anomalous,
+            event_count,
             features,
             cached_model.generation,
+            calibrated.severity,
         )
