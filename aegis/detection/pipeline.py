@@ -1,11 +1,9 @@
 from collections import defaultdict, deque
 from dataclasses import dataclass
 
-import numpy as np
-from sklearn.ensemble import IsolationForest
-
 from aegis.common.models import TelemetryEvent
 from aegis.detection.features import FeatureExtractor, WindowFeatures
+from aegis.detection.model_cache import IsolationForestModelCache
 
 
 @dataclass(frozen=True)
@@ -17,10 +15,17 @@ class DetectionResult:
     anomalous: bool
     sample_count: int
     features: WindowFeatures
+    model_generation: int
 
 
 class DetectionPipeline:
-    def __init__(self, window_size: int = 60, warmup: int = 20, threshold: float = 0.70) -> None:
+    def __init__(
+        self,
+        window_size: int = 60,
+        warmup: int = 20,
+        threshold: float = 0.70,
+        retrain_interval: int = 20,
+    ) -> None:
         self.window_size = window_size
         self.warmup = warmup
         self.threshold = threshold
@@ -29,6 +34,7 @@ class DetectionPipeline:
         )
         self.ewma: dict[tuple[str, str], float] = {}
         self.feature_extractor = FeatureExtractor()
+        self.model_cache = IsolationForestModelCache(retrain_interval=retrain_interval)
 
     @staticmethod
     def _clamp(value: float) -> float:
@@ -47,7 +53,9 @@ class DetectionPipeline:
                 if key not in self.ewma
                 else 0.2 * event.value + 0.8 * self.ewma[key]
             )
-            return DetectionResult(0.0, 0.0, 0.0, 0.0, False, len(window), features)
+            return DetectionResult(
+                0.0, 0.0, 0.0, 0.0, False, len(window), features, 0
+            )
 
         std = features.std or 1e-9
         raw_z = abs(event.value - features.mean) / std
@@ -57,10 +65,12 @@ class DetectionPipeline:
         ewma_deviation = abs(event.value - previous_ewma) / std
         ewma_score = self._clamp(ewma_deviation / 6.0)
 
-        model = IsolationForest(n_estimators=100, contamination="auto", random_state=42)
-        training = np.asarray(history, dtype=float).reshape(-1, 1)
-        model.fit(training)
-        decision = float(model.decision_function([[event.value]])[0])
+        decision, cached_model = self.model_cache.score(
+            key=key,
+            history=history,
+            current_value=event.value,
+            sample_count=len(history),
+        )
         isolation_score = self._clamp(0.5 - decision)
 
         unified = self._clamp(
@@ -78,4 +88,5 @@ class DetectionPipeline:
             anomalous,
             len(window),
             features,
+            cached_model.generation,
         )
