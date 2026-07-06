@@ -39,20 +39,27 @@ class AlertStore:
 
     def create(self, event: TelemetryEvent, result: DetectionResult) -> str:
         alert_id = str(uuid.uuid4())
-        severity = "critical" if result.unified_score >= 0.90 else "high" if result.unified_score >= 0.80 else "medium"
         scores = json.dumps(
             {
                 "z_score": result.z_score,
                 "ewma_score": result.ewma_score,
                 "isolation_score": result.isolation_score,
+                "model_generation": result.model_generation,
             }
         )
         with self._connect() as connection:
             connection.execute(
                 "INSERT INTO alerts VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                    alert_id, event.event_id, event.device_id, event.metric, event.value,
-                    result.unified_score, scores, severity, datetime.now(timezone.utc).isoformat(),
+                    alert_id,
+                    event.event_id,
+                    event.device_id,
+                    event.metric,
+                    event.value,
+                    result.unified_score,
+                    scores,
+                    result.severity,
+                    datetime.now(timezone.utc).isoformat(),
                 ),
             )
         return alert_id
