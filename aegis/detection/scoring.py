@@ -56,12 +56,9 @@ class UnifiedScoreCalibrator:
         z_score: float,
         ewma_score: float,
         isolation_score: float,
+        temporal_score: float = 0.0,
     ) -> CalibratedScore:
-        scores = [
-            self._clamp(z_score),
-            self._clamp(ewma_score),
-            self._clamp(isolation_score),
-        ]
+        scores = [self._clamp(z_score), self._clamp(ewma_score), self._clamp(isolation_score)]
         weighted = (
             self.weights.z_score * scores[0]
             + self.weights.ewma_score * scores[1]
@@ -69,7 +66,8 @@ class UnifiedScoreCalibrator:
         )
         votes = sum(score >= self.detector_vote_threshold for score in scores)
         consensus_bonus = self.agreement_bonus if votes >= 2 else 0.0
-        unified = self._clamp(weighted + consensus_bonus)
+        point_score = self._clamp(weighted + consensus_bonus)
+        unified = max(point_score, self._clamp(temporal_score))
         anomalous = unified >= self.threshold
 
         if unified >= 0.90:
@@ -80,5 +78,4 @@ class UnifiedScoreCalibrator:
             severity = "medium"
         else:
             severity = "normal"
-
         return CalibratedScore(unified, anomalous, severity, self.threshold)
