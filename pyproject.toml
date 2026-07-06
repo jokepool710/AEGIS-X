@@ -20,6 +20,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "ruff>=0.9", "mypy>=1.14", "httpx>=0.28"]
 
+[tool.hatch.build.targets.wheel]
+packages = ["aegis", "apps", "collectors", "cyber_range"]
+
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
