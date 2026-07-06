@@ -35,4 +35,5 @@ jobs:
       - name: End-to-end telemetry integration test
         env:
           E2E_MQTT_PORT: "1883"
-        run: python -m pytest -q tests/integration/test_telemetry_e2e.py
+          E2E_TIMEOUT: "30"
+        run: python -m pytest -q -s tests/integration/test_telemetry_e2e.py
