@@ -5,6 +5,7 @@ from aegis.common.models import TelemetryEvent
 from aegis.detection.features import FeatureExtractor, WindowFeatures
 from aegis.detection.model_cache import IsolationForestModelCache
 from aegis.detection.scoring import ScoreWeights, UnifiedScoreCalibrator
+from aegis.detection.slow_burn import SlowBurnDetector
 from aegis.detection.temporal import TemporalAttackDetector
 
 
@@ -19,28 +20,23 @@ class DetectionResult:
     features: WindowFeatures
     model_generation: int
     severity: str
+    temporal_score: float = 0.0
+    contextual_score: float = 0.0
 
 
 class DetectionPipeline:
-    def __init__(
-        self,
-        window_size: int = 60,
-        warmup: int = 20,
-        threshold: float = 0.70,
-        retrain_interval: int = 20,
-        score_weights: ScoreWeights | None = None,
-        agreement_bonus: float = 0.08,
-    ) -> None:
+    def __init__(self, window_size: int = 60, warmup: int = 20, threshold: float = 0.70,
+                 retrain_interval: int = 20, score_weights: ScoreWeights | None = None,
+                 agreement_bonus: float = 0.08) -> None:
         self.window_size = window_size
         self.warmup = warmup
         self.threshold = threshold
-        self.windows: dict[tuple[str, str], deque[float]] = defaultdict(
-            lambda: deque(maxlen=window_size)
-        )
+        self.windows: dict[tuple[str, str], deque[float]] = defaultdict(lambda: deque(maxlen=window_size))
         self.ewma: dict[tuple[str, str], float] = {}
         self.stream_event_counts: dict[tuple[str, str], int] = defaultdict(int)
         self.feature_extractor = FeatureExtractor()
         self.temporal_detector = TemporalAttackDetector()
+        self.slow_burn_detector = SlowBurnDetector()
         self.model_cache = IsolationForestModelCache(retrain_interval=retrain_interval)
         self.score_calibrator = UnifiedScoreCalibrator(
             weights=score_weights, threshold=threshold, agreement_bonus=agreement_bonus
@@ -67,18 +63,15 @@ class DetectionPipeline:
         z_score = self._clamp((abs(event.value - features.mean) / std) / 6.0)
         previous_ewma = self.ewma.get(key, features.mean)
         ewma_score = self._clamp((abs(event.value - previous_ewma) / std) / 6.0)
-
         decision, cached_model = self.model_cache.score(
             key=key, history=history, current_value=event.value, sample_count=event_count
         )
         isolation_score = self._clamp(0.5 - decision)
         temporal = self.temporal_detector.score(history, event.value)
-
+        contextual = self.slow_burn_detector.score(history, event.value)
         calibrated = self.score_calibrator.calibrate(
-            z_score=z_score,
-            ewma_score=ewma_score,
-            isolation_score=isolation_score,
-            temporal_score=temporal.score,
+            z_score=z_score, ewma_score=ewma_score, isolation_score=isolation_score,
+            temporal_score=temporal.score, contextual_score=contextual.score,
         )
 
         window.append(event.value)
@@ -86,5 +79,5 @@ class DetectionPipeline:
         return DetectionResult(
             z_score, ewma_score, isolation_score, calibrated.unified_score,
             calibrated.anomalous, event_count, features, cached_model.generation,
-            calibrated.severity,
+            calibrated.severity, temporal.score, contextual.score,
         )
