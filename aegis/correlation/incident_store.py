@@ -140,7 +140,7 @@ class PersistentIncidentStore:
             for incident in existing[1:]:
                 connection.execute("UPDATE incident_alerts SET incident_id = ? WHERE incident_id = ?", (target_id, incident.incident_id))
                 connection.execute("DELETE FROM incidents WHERE incident_id = ?", (incident.incident_id,))
-            for alert_id in all_alerts:
+            for alert_id in sorted(all_alerts):
                 connection.execute(
                     "INSERT OR IGNORE INTO incident_alerts (incident_id, alert_id) VALUES (?, ?)", (target_id, alert_id)
                 )
