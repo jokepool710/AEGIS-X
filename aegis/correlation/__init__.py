@@ -4,6 +4,7 @@ from aegis.correlation.engine import CorrelationEdge, CorrelationEngine, Correla
 from aegis.correlation.enrichment import AlertEnricher, DetectorEvidence, EnrichedAlert
 from aegis.correlation.incident_store import IncidentNotFoundError, PersistentIncidentStore
 from aegis.correlation.incidents import Incident, IncidentClusterer, IncidentLifecycle
+from aegis.correlation.risk import RiskAssessment, RiskEvidence, RiskPrioritizationEngine, RiskWeights
 from aegis.correlation.topology import Asset, AssetRelationship, AssetTopology, AssetType, RelationshipType
 
 __all__ = [
@@ -12,5 +13,6 @@ __all__ = [
     "CorrelationEdge", "CorrelationEngine", "CorrelationEvidence", "CorrelationWeights",
     "AlertEnricher", "DetectorEvidence", "EnrichedAlert",
     "Incident", "IncidentClusterer", "IncidentLifecycle", "PersistentIncidentStore", "IncidentNotFoundError",
+    "RiskAssessment", "RiskEvidence", "RiskPrioritizationEngine", "RiskWeights",
     "Asset", "AssetRelationship", "AssetTopology", "AssetType", "RelationshipType",
 ]
