@@ -55,9 +55,7 @@ class AlertStore:
                 )
                 """
             )
-            columns = {
-                row["name"] for row in connection.execute("PRAGMA table_info(alerts)").fetchall()
-            }
+            columns = {row["name"] for row in connection.execute("PRAGMA table_info(alerts)").fetchall()}
             migrations = {
                 "status": "ALTER TABLE alerts ADD COLUMN status TEXT NOT NULL DEFAULT 'open'",
                 "updated_at": "ALTER TABLE alerts ADD COLUMN updated_at TEXT",
@@ -77,14 +75,14 @@ class AlertStore:
 
     def create(self, event: TelemetryEvent, result: DetectionResult) -> str:
         alert_id = str(uuid.uuid4())
-        scores = json.dumps(
-            {
-                "z_score": result.z_score,
-                "ewma_score": result.ewma_score,
-                "isolation_score": result.isolation_score,
-                "model_generation": result.model_generation,
-            }
-        )
+        scores = json.dumps({
+            "z_score": result.z_score,
+            "ewma_score": result.ewma_score,
+            "isolation_score": result.isolation_score,
+            "temporal_score": result.temporal_score,
+            "contextual_score": result.contextual_score,
+            "model_generation": result.model_generation,
+        })
         with self._connect() as connection:
             connection.execute(
                 """
@@ -103,9 +101,7 @@ class AlertStore:
 
     def get(self, alert_id: str) -> dict[str, object]:
         with self._connect() as connection:
-            row = connection.execute(
-                "SELECT * FROM alerts WHERE alert_id = ?", (alert_id,)
-            ).fetchone()
+            row = connection.execute("SELECT * FROM alerts WHERE alert_id = ?", (alert_id,)).fetchone()
         if row is None:
             raise AlertNotFoundError(alert_id)
         return self._deserialize(row)
