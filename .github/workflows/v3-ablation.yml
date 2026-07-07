@@ -33,3 +33,5 @@ jobs:
           name: v3-ablation-results
           path: artifacts/ablation/
           retention-days: 30
+
+# Trigger marker: forced benchmark run after spike-semantics correction.
