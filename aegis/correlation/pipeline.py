@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 from aegis.correlation.attack_graph import AttackGraph, AttackGraphEngine
 from aegis.correlation.attack_mapping import ICSAttackMapper, ICSMapping
-from aegis.correlation.engine import CorrelationEdge, CorrelationEngine
-from aegis.correlation.enrichment import AlertEnricher, EnrichedAlert
+from aegis.correlation.engine import CorrelationEngine
+from aegis.correlation.enrichment import AlertEnricher
 from aegis.correlation.incident_store import PersistentIncidentStore
 from aegis.correlation.incidents import Incident, IncidentClusterer
 from aegis.correlation.risk import RiskAssessment, RiskPrioritizationEngine
