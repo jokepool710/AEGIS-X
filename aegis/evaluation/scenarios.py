@@ -53,14 +53,12 @@ class CPSAttackScenarioGenerator:
             for index in range(episode.start, episode.end):
                 original = events[index]
                 progress = (index - episode.start) / duration
-                label = True
                 if episode.attack_type == "sensor_spoofing":
                     value = original.value + episode.magnitude
                 elif episode.attack_type == "drift_injection":
                     value = original.value + episode.magnitude * progress
                 elif episode.attack_type == "spike":
                     value = original.value + episode.magnitude if index == episode.start else original.value
-                    label = index == episode.start
                 elif episode.attack_type == "replay":
                     value = replay_pattern[(index - episode.start) % len(replay_pattern)]
                 elif episode.attack_type == "stuck_at_value":
@@ -71,9 +69,8 @@ class CPSAttackScenarioGenerator:
                     raise ValueError(f"unsupported attack type: {episode.attack_type}")
 
                 events[index] = original.model_copy(update={"value": value})
-                if label:
-                    labels[index] = True
-                    attack_types[index] = episode.attack_type
+                labels[index] = True
+                attack_types[index] = episode.attack_type
 
         return [LabelledTelemetry(event=event, is_attack=label, attack_type=attack_type)
                 for event, label, attack_type in zip(events, labels, attack_types, strict=True)]
