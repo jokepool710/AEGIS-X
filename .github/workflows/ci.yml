@@ -37,3 +37,5 @@ jobs:
           E2E_MQTT_PORT: "1883"
           E2E_TIMEOUT: "30"
         run: python -m pytest -q -s tests/integration/test_telemetry_e2e.py
+      - name: End-to-end Phase 3 incident integration test
+        run: python -m pytest -q -s tests/integration/test_phase3_e2e.py
