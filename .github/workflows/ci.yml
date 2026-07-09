@@ -39,3 +39,5 @@ jobs:
         run: python -m pytest -q -s tests/integration/test_telemetry_e2e.py
       - name: End-to-end Phase 3 incident integration test
         run: python -m pytest -q -s tests/integration/test_phase3_e2e.py
+      - name: End-to-end Phase 4 investigator integration test
+        run: python -m pytest -q -s tests/integration/test_phase4_e2e.py
