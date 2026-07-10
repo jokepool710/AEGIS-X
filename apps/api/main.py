@@ -7,7 +7,13 @@ from pydantic import BaseModel
 
 from aegis.common.storage import TelemetryStore
 from aegis.correlation.incident_store import IncidentNotFoundError, PersistentIncidentStore
+from aegis.correlation.pipeline import IncidentAnalysis
 from aegis.detection.alerts import AlertNotFoundError, AlertStore, InvalidAlertTransitionError
+from aegis.investigation.artifact_store import (
+    InvestigationArtifactNotFoundError,
+    InvestigationArtifactStore,
+)
+from aegis.investigation.investigator import IncidentInvestigator
 
 app = FastAPI(title="AEGIS-X API", version="0.4.0")
 
@@ -23,6 +29,11 @@ class AlertStatusUpdate(BaseModel):
 class IncidentStatusUpdate(BaseModel):
     status: IncidentStatus
     note: str | None = None
+
+
+def register_incident_analysis(analysis: IncidentAnalysis) -> None:
+    """Durably publish a completed Phase 3 analysis for Phase 4 investigation."""
+    InvestigationArtifactStore(TelemetryStore()).save(analysis)
 
 
 def _incident_payload(incident: object) -> dict[str, object]:
@@ -92,13 +103,22 @@ def update_incident_status(incident_id: str, update: IncidentStatusUpdate) -> di
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
+@app.get("/api/v1/incidents/{incident_id}/investigation")
+def investigate_incident(incident_id: str) -> dict[str, object]:
+    try:
+        analysis = InvestigationArtifactStore(TelemetryStore()).get(incident_id)
+    except InvestigationArtifactNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="incident analysis not available") from exc
+    return IncidentInvestigator().investigate(analysis).to_dict()
+
+
 @app.get("/api/v1/status")
 def platform_status() -> dict[str, object]:
     return {
-        "platform": "AEGIS-X", "phase": "attack-correlation",
+        "platform": "AEGIS-X", "phase": "evidence-grounded-investigation",
         "components": {
             "api": "online", "telemetry": "active", "detection": "active",
             "attack_graph": "active", "incident_correlation": "active",
-            "investigator": "planned", "response": "planned",
+            "investigator": "active", "response": "planned",
         },
     }
