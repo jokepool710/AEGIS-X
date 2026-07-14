@@ -52,7 +52,7 @@ MQTT sensor simulation
 - [x] Phase 3 — Asset topology, alert enrichment, correlation, incident clustering, persistent incidents, attack graphs, ATT&CK for ICS mapping, risk prioritization, Incident API, and Phase 3 E2E validation
 - [x] Phase 4 — Evidence-grounded AI incident investigator
 - [x] Phase 5 — Autonomous investigation orchestration, human approval gates, and decision auditability
-- [ ] Phase 6 — Investigation workflow, analyst feedback, and case evidence provenance *(in progress)*
+- [ ] Phase 6 — Autonomous Cyber Defense: AI-assisted response playbooks and human-gated execution *(in progress)*
 - [ ] Phase 7 — Human-approved response orchestration
 - [ ] Phase 8 — Research benchmarking, comparative evaluation, and publication artifacts
 
