@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any
-
 from aegis.investigation.evidence import EvidenceBundle, EvidenceItem, EvidenceKind
 from aegis.orchestration.planning import InvestigationPlan, InvestigationTask, TaskDAG
 from aegis.orchestration.tools import SafeToolExecutor, ToolRegistry, ToolResult
