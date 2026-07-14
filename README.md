@@ -50,9 +50,9 @@ MQTT sensor simulation
 - [x] Phase 1 — MQTT simulator, telemetry ingestion, persistence, and telemetry E2E validation
 - [x] Phase 2 — Anomaly detection, unified scoring, alert lifecycle, labelled attack scenarios, evaluation harness, and benchmarking
 - [x] Phase 3 — Asset topology, alert enrichment, correlation, incident clustering, persistent incidents, attack graphs, ATT&CK for ICS mapping, risk prioritization, Incident API, and Phase 3 E2E validation
-- [ ] Phase 4 — Evidence-grounded AI incident investigator
-- [ ] Phase 5 — Multimodal event fusion and cross-source evidence correlation
-- [ ] Phase 6 — Investigation workflow, analyst feedback, and case evidence provenance
+- [x] Phase 4 — Evidence-grounded AI incident investigator
+- [x] Phase 5 — Autonomous investigation orchestration, human approval gates, and decision auditability
+- [ ] Phase 6 — Investigation workflow, analyst feedback, and case evidence provenance *(in progress)*
 - [ ] Phase 7 — Human-approved response orchestration
 - [ ] Phase 8 — Research benchmarking, comparative evaluation, and publication artifacts
 
