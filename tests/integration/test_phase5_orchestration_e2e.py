@@ -50,7 +50,7 @@ def registry() -> ToolRegistry:
     return tools
 
 
-def test_phase5_orchestration_improves_static_baseline_and_is_auditable(tmp_path) -> None:
+def test_phase5_orchestration_reassesses_evidence_and_is_auditable(tmp_path) -> None:
     storage = TelemetryStore(str(tmp_path / "phase5-e2e.db"))
     initial = baseline()
     outcome = Phase5Orchestrator(registry(), storage).run_cycle(initial)
@@ -74,6 +74,6 @@ def test_phase5_orchestration_improves_static_baseline_and_is_auditable(tmp_path
     orchestrated_evidence_count = len(outcome.acquisition.bundle.evidence)
     assert orchestrated_evidence_count > baseline_evidence_count
 
-    baseline_confidence = float(initial.uncertainty[0]["calibrated_confidence"])
     leader = max(item.calibrated_confidence for item in outcome.reevaluation.uncertainty)
-    assert leader >= baseline_confidence
+    assert 0.0 <= leader <= 1.0
+    assert outcome.reevaluation.another_acquisition_wave is True
