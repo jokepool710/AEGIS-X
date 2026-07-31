@@ -41,3 +41,5 @@ jobs:
         run: python -m pytest -q -s tests/integration/test_phase3_e2e.py
       - name: End-to-end Phase 4 investigator integration test
         run: python -m pytest -q -s tests/integration/test_phase4_e2e.py
+      - name: End-to-end Phase 5 orchestration integration test
+        run: python -m pytest -q -s tests/integration/test_phase5_orchestration_e2e.py

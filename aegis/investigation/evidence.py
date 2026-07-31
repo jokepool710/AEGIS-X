@@ -15,6 +15,7 @@ class EvidenceKind(str, Enum):
     ATTACK_MAPPING = "attack_mapping"
     RISK = "risk"
     LIFECYCLE = "lifecycle"
+    TOOL_RESULT = "tool_result"
 
 
 @dataclass(frozen=True)
