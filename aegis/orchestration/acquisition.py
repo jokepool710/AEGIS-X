@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+
 from aegis.investigation.evidence import EvidenceBundle, EvidenceItem, EvidenceKind
 from aegis.orchestration.planning import InvestigationPlan, InvestigationTask, TaskDAG
 from aegis.orchestration.tools import SafeToolExecutor, ToolRegistry, ToolResult
@@ -69,7 +70,7 @@ class EvidenceAcquisitionLoop:
         observed_at = result.payload.get("observed_at")
         item = EvidenceItem(
             evidence_id=evidence_id,
-            kind=EvidenceKind.LIFECYCLE,
+            kind=EvidenceKind.TOOL_RESULT,
             source=f"orchestration.tool:{result.tool_name}",
             observed_at=str(observed_at) if observed_at is not None else datetime.now(timezone.utc).isoformat(),
             payload={
