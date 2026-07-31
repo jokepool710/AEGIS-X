@@ -1,4 +1,4 @@
-from aegis.investigation.evidence import EvidenceBundle
+from aegis.investigation.evidence import EvidenceBundle, EvidenceKind
 from aegis.orchestration.acquisition import EvidenceAcquisitionLoop
 from aegis.orchestration.planning import InvestigationPlan, InvestigationTask, TaskType
 from aegis.orchestration.tools import ToolRegistry, ToolSpec
@@ -37,6 +37,7 @@ def test_executes_only_ready_tasks_and_preserves_provenance() -> None:
     assert len(outcome.records) == 1
     assert outcome.records[0].succeeded is True
     item = outcome.bundle.evidence[0]
+    assert item.kind is EvidenceKind.TOOL_RESULT
     assert item.source == "orchestration.tool:historian-query"
     assert item.payload["plan_id"] == "plan-inc-1"
     assert item.payload["task_id"] == "collect"
