@@ -14,7 +14,7 @@ def baseline() -> InvestigationResult:
             EvidenceItem("incident:inc-e2e", EvidenceKind.INCIDENT, "test", "2026-07-10T10:00:00+00:00", {"severity": "high"}),
             EvidenceItem("alert:a1", EvidenceKind.ALERT, "test", "2026-07-10T10:00:01+00:00", {}),
             EvidenceItem("attack:T1", EvidenceKind.ATTACK_MAPPING, "test", None, {
-                "technique_id": "T1", "technique_name": "Unauthorized command", "confidence": 0.45,
+                "technique_id": "T1", "technique_name": "Unauthorized command", "confidence": 0.85,
             }),
         ),
     )
