@@ -2,10 +2,15 @@ from __future__ import annotations
 
 import json
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aegis.common.storage import TelemetryStore
-from aegis.correlation.incidents import Incident, INCIDENT_STATUSES, INCIDENT_TRANSITIONS, SEVERITY_RANK
+from aegis.correlation.incidents import (
+    INCIDENT_STATUSES,
+    INCIDENT_TRANSITIONS,
+    SEVERITY_RANK,
+    Incident,
+)
 
 
 class IncidentNotFoundError(LookupError):
@@ -126,7 +131,7 @@ class PersistentIncidentStore:
 
             confidence = max(confidence_values)
             severity = max(severities, key=lambda value: SEVERITY_RANK.get(value, 0))
-            now = datetime.now(timezone.utc).isoformat()
+            now = datetime.now(UTC).isoformat()
             connection.execute(
                 """INSERT INTO incidents (incident_id, affected_assets, attack_families, first_seen, last_seen,
                    confidence, severity, status, updated_at, status_note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -154,7 +159,7 @@ class PersistentIncidentStore:
             return current
         if new_status not in INCIDENT_TRANSITIONS[current.status]:
             raise ValueError(f"cannot transition incident from {current.status} to {new_status}")
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         with self._connect() as connection:
             connection.execute(
                 "UPDATE incidents SET status = ?, updated_at = ?, status_note = ? WHERE incident_id = ?",

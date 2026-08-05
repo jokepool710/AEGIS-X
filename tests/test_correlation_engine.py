@@ -1,6 +1,12 @@
 from aegis.correlation.engine import CorrelationEngine
 from aegis.correlation.enrichment import DetectorEvidence, EnrichedAlert
-from aegis.correlation.topology import Asset, AssetRelationship, AssetTopology, AssetType, RelationshipType
+from aegis.correlation.topology import (
+    Asset,
+    AssetRelationship,
+    AssetTopology,
+    AssetType,
+    RelationshipType,
+)
 
 
 def topology() -> AssetTopology:

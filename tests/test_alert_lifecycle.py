@@ -1,16 +1,16 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
 from aegis.common.models import TelemetryEvent
 from aegis.common.storage import TelemetryStore
-from aegis.detection.alerts import InvalidAlertTransitionError, AlertStore
+from aegis.detection.alerts import AlertStore, InvalidAlertTransitionError
 from aegis.detection.features import FeatureExtractor
 from aegis.detection.pipeline import DetectionResult
 
 
 def make_event() -> TelemetryEvent:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return TelemetryEvent(
         event_id="alert-event-1", device_id="pump-01", device_type="industrial_pump",
         site_id="lab-01", timestamp=now, sequence=1, metric="temperature",

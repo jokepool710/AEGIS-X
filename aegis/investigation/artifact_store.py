@@ -1,7 +1,7 @@
 import json
 import sqlite3
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aegis.common.storage import TelemetryStore
 from aegis.correlation.attack_graph import (
@@ -67,7 +67,7 @@ class InvestigationArtifactStore:
                 (
                     analysis.incident.incident_id,
                     json.dumps(payload, sort_keys=True, separators=(",", ":")),
-                    datetime.now(timezone.utc).isoformat(),
+                    datetime.now(UTC).isoformat(),
                 ),
             )
 

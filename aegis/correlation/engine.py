@@ -59,7 +59,7 @@ class CorrelationEngine:
 
     @staticmethod
     def _timestamp(value: str) -> datetime:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return datetime.fromisoformat(value)
 
     @staticmethod
     def _metric_score(left: str, right: str) -> float:

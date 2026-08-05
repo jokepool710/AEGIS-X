@@ -1,7 +1,7 @@
 import math
 import random
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from aegis.common.models import TelemetryEvent
 from aegis.evaluation.harness import LabelledTelemetry
@@ -22,7 +22,7 @@ class CPSAttackScenarioGenerator:
     def baseline(self, length: int, base_value: float = 24.0, noise_std: float = 0.08,
                  device_id: str = "pump-eval-01", metric: str = "temperature",
                  unit: str = "celsius") -> list[TelemetryEvent]:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         events = []
         for index in range(length):
             seasonal = 0.15 * math.sin(index / 12.0)

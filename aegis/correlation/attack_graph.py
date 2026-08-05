@@ -1,3 +1,4 @@
+import itertools
 from dataclasses import asdict, dataclass
 from enum import Enum
 
@@ -120,7 +121,7 @@ class AttackGraphEngine:
             )
 
         ordered = sorted(members.values(), key=lambda alert: alert.created_at)
-        for left, right in zip(ordered, ordered[1:]):
+        for left, right in itertools.pairwise(ordered):
             if left.alert_id == right.alert_id:
                 continue
             source_id = f"alert:{left.alert_id}"

@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 
 from aegis.orchestration.planning import InvestigationTask
@@ -66,7 +66,7 @@ class HumanApprovalGate:
             return existing
         request = ApprovalRequest(
             approval_id, incident_id, plan_id, task.task_id, tool_name, digest,
-            datetime.now(timezone.utc).isoformat(),
+            datetime.now(UTC).isoformat(),
         )
         self._requests[approval_id] = request
         return request
@@ -81,7 +81,7 @@ class HumanApprovalGate:
             current.approval_id, current.incident_id, current.plan_id,
             current.task_id, current.tool_name, current.action_digest,
             current.requested_at, status, analyst_id,
-            datetime.now(timezone.utc).isoformat(), reason,
+            datetime.now(UTC).isoformat(), reason,
         )
         self._requests[approval_id] = updated
         return updated

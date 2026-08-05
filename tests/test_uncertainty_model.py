@@ -1,7 +1,10 @@
 import pytest
 
 from aegis.investigation.citations import (
-    CitationValidation, ClaimType, GroundedClaim, InvestigativeClaim,
+    CitationValidation,
+    ClaimType,
+    GroundedClaim,
+    InvestigativeClaim,
 )
 from aegis.investigation.evidence import EvidenceBundle, EvidenceItem, EvidenceKind
 from aegis.investigation.hypotheses import InvestigationHypothesis

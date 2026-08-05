@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
@@ -42,7 +42,7 @@ def _incident_payload(incident: object) -> dict[str, object]:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "aegis-x-api", "timestamp": datetime.now(timezone.utc).isoformat()}
+    return {"status": "ok", "service": "aegis-x-api", "timestamp": datetime.now(UTC).isoformat()}
 
 
 @app.get("/api/v1/telemetry/health")
@@ -50,7 +50,7 @@ def telemetry_health() -> dict[str, object]:
     stats = TelemetryStore().health_stats()
     return {
         "status": "receiving" if stats["last_ingested_at"] is not None else "waiting_for_telemetry",
-        "timestamp": datetime.now(timezone.utc).isoformat(), "storage": stats,
+        "timestamp": datetime.now(UTC).isoformat(), "storage": stats,
     }
 
 

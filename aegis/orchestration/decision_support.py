@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from enum import Enum
+from typing import ClassVar
 
 from aegis.investigation.uncertainty import UncertaintyAssessment
 from aegis.orchestration.planning import InvestigationPlan, InvestigationTask, TaskDAG, TaskType
@@ -32,7 +33,7 @@ class DecisionRecommendation:
 class AnalystDecisionSupportEngine:
     """Rank dependency-ready investigative actions for analyst review."""
 
-    _TYPE_INFORMATION_GAIN = {
+    _TYPE_INFORMATION_GAIN: ClassVar[dict[TaskType, float]] = {
         TaskType.CHECK_CONTRADICTION: 0.95,
         TaskType.VALIDATE_HYPOTHESIS: 0.90,
         TaskType.QUERY_EVIDENCE: 0.85,
@@ -40,7 +41,7 @@ class AnalystDecisionSupportEngine:
         TaskType.INSPECT_ASSET: 0.70,
         TaskType.REEVALUATE_RISK: 0.45,
     }
-    _TYPE_COST = {
+    _TYPE_COST: ClassVar[dict[TaskType, float]] = {
         TaskType.QUERY_EVIDENCE: 0.25,
         TaskType.CHECK_CONTRADICTION: 0.35,
         TaskType.EXPAND_TIMELINE: 0.40,
@@ -48,7 +49,7 @@ class AnalystDecisionSupportEngine:
         TaskType.INSPECT_ASSET: 0.60,
         TaskType.REEVALUATE_RISK: 0.15,
     }
-    _TYPE_RISK = {
+    _TYPE_RISK: ClassVar[dict[TaskType, ActionRisk]] = {
         TaskType.INSPECT_ASSET: ActionRisk.MODERATE,
     }
 

@@ -3,7 +3,7 @@ import os
 import subprocess
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import paho.mqtt.client as mqtt
@@ -63,7 +63,7 @@ def test_mqtt_to_collector_to_storage_to_health_api(tmp_path: Path) -> None:
             "device_id": "pump-e2e-01",
             "device_type": "industrial_pump",
             "site_id": "integration-lab",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "sequence": 1,
             "metric": "temperature",
             "value": 26.75,

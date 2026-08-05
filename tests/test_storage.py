@@ -1,11 +1,11 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aegis.common.models import TelemetryEvent
 from aegis.common.storage import TelemetryStore
 
 
 def make_event(event_id: str = "event-1") -> TelemetryEvent:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return TelemetryEvent(
         event_id=event_id,
         device_id="pump-01",

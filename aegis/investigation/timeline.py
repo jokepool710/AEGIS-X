@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aegis.investigation.evidence import EvidenceBundle, EvidenceKind
 
@@ -30,10 +30,10 @@ class TimelineReconstructor:
 
     @staticmethod
     def _parse_timestamp(value: str) -> datetime:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(value)
         if parsed.tzinfo is None:
-            parsed = parsed.replace(tzinfo=timezone.utc)
-        return parsed.astimezone(timezone.utc)
+            parsed = parsed.replace(tzinfo=UTC)
+        return parsed.astimezone(UTC)
 
     @staticmethod
     def _summary(kind: EvidenceKind, payload: dict[str, object]) -> str:

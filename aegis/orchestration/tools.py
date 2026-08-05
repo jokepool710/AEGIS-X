@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 
 from aegis.orchestration.planning import InvestigationTask, TaskType
 
@@ -91,7 +92,7 @@ class SafeToolExecutor:
             )
         try:
             payload = spec.handler(task)
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             return ToolResult(tool_name, task.task_id, False, error=str(exc))
         if not isinstance(payload, dict):
             return ToolResult(

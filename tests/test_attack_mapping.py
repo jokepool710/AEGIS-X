@@ -1,4 +1,10 @@
-from aegis.correlation.attack_graph import AttackGraph, AttackGraphEdge, AttackGraphNode, GraphEdgeType, GraphNodeType
+from aegis.correlation.attack_graph import (
+    AttackGraph,
+    AttackGraphEdge,
+    AttackGraphNode,
+    GraphEdgeType,
+    GraphNodeType,
+)
 from aegis.correlation.attack_mapping import ICSAttackMapper
 
 

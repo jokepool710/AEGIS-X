@@ -4,7 +4,7 @@ import math
 import os
 import random
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import paho.mqtt.client as mqtt
 
@@ -39,7 +39,7 @@ def main() -> None:
     try:
         while True:
             anomalous = random.random() < args.anomaly_rate
-            timestamp = datetime.now(timezone.utc).isoformat()
+            timestamp = datetime.now(UTC).isoformat()
             for metric, value in reading(sequence, anomalous).items():
                 payload = {
                     "device_id": args.device_id,

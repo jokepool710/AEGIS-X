@@ -1,7 +1,7 @@
 import json
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import paho.mqtt.client as mqtt
 from pydantic import ValidationError
@@ -27,7 +27,7 @@ def normalize(topic: str, payload: bytes) -> TelemetryEvent:
         site_id=raw["site_id"], timestamp=raw["timestamp"], sequence=raw["sequence"],
         metric=raw["metric"], value=raw["value"], unit=raw["unit"],
         quality=raw.get("quality", "good"), source_topic=topic,
-        ingested_at=datetime.now(timezone.utc),
+        ingested_at=datetime.now(UTC),
     )
 
 

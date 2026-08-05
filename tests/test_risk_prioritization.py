@@ -1,4 +1,10 @@
-from aegis.correlation.attack_graph import AttackGraph, AttackGraphEdge, AttackGraphNode, GraphEdgeType, GraphNodeType
+from aegis.correlation.attack_graph import (
+    AttackGraph,
+    AttackGraphEdge,
+    AttackGraphNode,
+    GraphEdgeType,
+    GraphNodeType,
+)
 from aegis.correlation.attack_mapping import ICSMapping
 from aegis.correlation.incidents import Incident
 from aegis.correlation.risk import RiskPrioritizationEngine
