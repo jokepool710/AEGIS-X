@@ -2,7 +2,13 @@ from aegis.correlation.attack_graph import AttackGraphEngine, GraphEdgeType, Gra
 from aegis.correlation.engine import CorrelationEdge, CorrelationEvidence
 from aegis.correlation.enrichment import DetectorEvidence, EnrichedAlert
 from aegis.correlation.incidents import Incident
-from aegis.correlation.topology import Asset, AssetRelationship, AssetTopology, AssetType, RelationshipType
+from aegis.correlation.topology import (
+    Asset,
+    AssetRelationship,
+    AssetTopology,
+    AssetType,
+    RelationshipType,
+)
 
 
 def topology() -> AssetTopology:

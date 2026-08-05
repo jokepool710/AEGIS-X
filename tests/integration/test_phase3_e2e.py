@@ -3,7 +3,13 @@ from fastapi.testclient import TestClient
 from aegis.common.storage import TelemetryStore
 from aegis.correlation.incident_store import PersistentIncidentStore
 from aegis.correlation.pipeline import Phase3Pipeline
-from aegis.correlation.topology import Asset, AssetRelationship, AssetTopology, AssetType, RelationshipType
+from aegis.correlation.topology import (
+    Asset,
+    AssetRelationship,
+    AssetTopology,
+    AssetType,
+    RelationshipType,
+)
 from apps.api.main import app
 
 

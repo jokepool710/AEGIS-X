@@ -7,7 +7,10 @@ from aegis.investigation.evidence import EvidenceBundle, EvidenceItem, EvidenceK
 from aegis.investigation.investigator import InvestigationResult
 from aegis.investigation.uncertainty import ConfidenceBand, UncertaintyAssessment
 from aegis.orchestration.acquisition import AcquisitionOutcome, EvidenceAcquisitionLoop
-from aegis.orchestration.decision_support import AnalystDecisionSupportEngine, DecisionRecommendation
+from aegis.orchestration.decision_support import (
+    AnalystDecisionSupportEngine,
+    DecisionRecommendation,
+)
 from aegis.orchestration.ledger import DecisionEventType, DecisionLedger
 from aegis.orchestration.policy import InvestigationPolicyEngine
 from aegis.orchestration.reevaluation import HypothesisReevaluationLoop, ReevaluationOutcome

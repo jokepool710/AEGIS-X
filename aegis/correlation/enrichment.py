@@ -68,7 +68,7 @@ class AlertEnricher:
             model_generation=int(scores.get("model_generation", 0)),
         )
         created_at = str(alert["created_at"])
-        datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        datetime.fromisoformat(created_at)
         return EnrichedAlert(
             alert_id=str(alert["alert_id"]),
             event_id=str(alert["event_id"]),

@@ -67,7 +67,7 @@ class RiskPrioritizationEngine:
 
     @staticmethod
     def _timestamp(value: str) -> datetime:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return datetime.fromisoformat(value)
 
     @staticmethod
     def _severity_score(severity: str) -> float:

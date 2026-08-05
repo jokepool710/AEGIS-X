@@ -1,7 +1,7 @@
 import json
 import sqlite3
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aegis.common.models import TelemetryEvent
 from aegis.common.storage import TelemetryStore
@@ -94,7 +94,7 @@ class AlertStore:
                 (
                     alert_id, event.event_id, event.device_id, event.metric, event.value,
                     result.unified_score, scores, result.severity,
-                    datetime.now(timezone.utc).isoformat(),
+                    datetime.now(UTC).isoformat(),
                 ),
             )
         return alert_id
@@ -132,7 +132,7 @@ class AlertStore:
             raise InvalidAlertTransitionError(
                 f"cannot transition alert from {current_status} to {new_status}"
             )
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         with self._connect() as connection:
             connection.execute(
                 "UPDATE alerts SET status = ?, updated_at = ?, status_note = ? WHERE alert_id = ?",

@@ -5,7 +5,7 @@ import json
 import sqlite3
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
 
@@ -80,7 +80,7 @@ class DecisionLedger:
         if not incident_id or not plan_id or not actor_id:
             raise ValueError("incident_id, plan_id, and actor_id are required")
         payload_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
-        occurred_at = datetime.now(timezone.utc).isoformat()
+        occurred_at = datetime.now(UTC).isoformat()
         event_id = str(uuid.uuid4())
         with self._connect() as connection:
             connection.execute("BEGIN IMMEDIATE")
@@ -140,10 +140,10 @@ class DecisionLedger:
     def _hash(event_id: str, incident_id: str, plan_id: str, event_type: str,
               actor_id: str, payload_json: str, occurred_at: str,
               previous_hash: str) -> str:
-        canonical = "|".join((
-            event_id, incident_id, plan_id, event_type, actor_id,
-            payload_json, occurred_at, previous_hash,
-        ))
+        canonical = (
+            f"{event_id}|{incident_id}|{plan_id}|{event_type}|{actor_id}"
+            f"|{payload_json}|{occurred_at}|{previous_hash}"
+        )
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
     @staticmethod

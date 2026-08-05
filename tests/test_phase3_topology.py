@@ -1,5 +1,11 @@
 from aegis.correlation.enrichment import AlertEnricher
-from aegis.correlation.topology import Asset, AssetRelationship, AssetTopology, AssetType, RelationshipType
+from aegis.correlation.topology import (
+    Asset,
+    AssetRelationship,
+    AssetTopology,
+    AssetType,
+    RelationshipType,
+)
 
 
 def build_topology() -> AssetTopology:

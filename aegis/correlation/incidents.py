@@ -1,6 +1,6 @@
 import uuid
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aegis.correlation.engine import CorrelationEdge
 from aegis.correlation.enrichment import EnrichedAlert
@@ -36,7 +36,7 @@ class IncidentClusterer:
 
     @staticmethod
     def _timestamp(value: str) -> datetime:
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return datetime.fromisoformat(value)
 
     @staticmethod
     def _severity(alerts: list[EnrichedAlert]) -> str:
@@ -102,6 +102,6 @@ class IncidentLifecycle:
         return replace(
             incident,
             status=new_status,
-            updated_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(UTC).isoformat(),
             status_note=note,
         )

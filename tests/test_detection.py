@@ -1,11 +1,11 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from aegis.common.models import TelemetryEvent
 from aegis.detection.pipeline import DetectionPipeline
 
 
 def event(sequence: int, value: float) -> TelemetryEvent:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     return TelemetryEvent(
         event_id=f"event-{sequence}", device_id="pump-01", device_type="industrial_pump",
         site_id="lab-01", timestamp=now, sequence=sequence, metric="temperature",
