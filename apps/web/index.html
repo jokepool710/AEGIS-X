@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEGIS-X — Enterprise Cyber-Physical Security Platform</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">AX</div>
+      <div class="brand-title">AEGIS-X</div>
+      <div class="brand-badge">Enterprise v0.7.0</div>
+    </div>
+
+    <div class="nav-menu">
+      <a href="#" class="nav-link active" data-tab="dashboard">Command Center</a>
+      <a href="#" class="nav-link" data-tab="incidents">Incidents</a>
+      <a href="#" class="nav-link" data-tab="cases">Case Workspace</a>
+      <a href="#" class="nav-link" data-tab="response">Response Planner</a>
+      <a href="#" class="nav-link" data-tab="benchmarks">Research Benchmarks</a>
+    </div>
+
+    <div class="system-status">
+      <div class="status-dot"></div>
+      <span>Platform: <strong id="platform-phase">Active</strong></span>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- TAB 1: Command Center Dashboard -->
+    <section id="dashboard-view" class="view-section active">
+      <!-- Metrics Overview Row -->
+      <div class="metrics-row">
+        <div class="card">
+          <div class="card-title">Ingested Telemetry Events</div>
+          <div class="card-value" id="metric-events">14,820</div>
+          <div class="card-subtext">MQTT / OPC UA / Modbus</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Detected Anomaly Alerts</div>
+          <div class="card-value" id="metric-anomalies">42</div>
+          <div class="card-subtext">Statistical & Unified Scoring</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Correlated Incidents</div>
+          <div class="card-value" id="metric-incidents">3</div>
+          <div class="card-subtext">Attack Graph Reasoning</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Citation Faithfulness</div>
+          <div class="card-value">94.8%</div>
+          <div class="card-subtext">Grounded AI Verification</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Live Attack Graph Visualizer -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>⚡</span> Real-Time Attack Graph Topology
+            </div>
+            <button class="btn btn-secondary" onclick="initAttackGraphCanvas()">Reset View</button>
+          </div>
+          <div class="graph-canvas-container">
+            <canvas id="attackGraphCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- System Health & Activity Stream -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>🛡️</span> Cyber-Physical Asset Status
+            </div>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Asset</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>PLC-01</strong></td>
+                  <td>Programmable Controller</td>
+                  <td><span class="badge badge-critical">ANOMALY</span></td>
+                </tr>
+                <tr>
+                  <td><strong>HMI-01</strong></td>
+                  <td>Operator Interface</td>
+                  <td><span class="badge badge-medium">WARNING</span></td>
+                </tr>
+                <tr>
+                  <td><strong>PUMP-01</strong></td>
+                  <td>Water Actuator</td>
+                  <td><span class="badge badge-low">NOMINAL</span></td>
+                </tr>
+                <tr>
+                  <td><strong>VALVE-02</strong></td>
+                  <td>Flow Regulator</td>
+                  <td><span class="badge badge-low">NOMINAL</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Incidents View -->
+    <section id="incidents-view" class="view-section">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🔥</span> Active Security Incidents
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Risk Score</th>
+                <th>Affected Assets</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="incidents-tbody">
+              <!-- Rendered via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Case Workspace View -->
+    <section id="cases-view" class="view-section">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>📁</span> Investigation Case Dossiers & Provenance
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>Title</th>
+                <th>Analyst</th>
+                <th>Status</th>
+                <th>Dossier & Chain of Custody</th>
+              </tr>
+            </thead>
+            <tbody id="cases-tbody">
+              <!-- Rendered via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Response Planner View -->
+    <section id="response-view" class="view-section">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>🚨</span> Human-Approved Response Orchestration
+          </div>
+        </div>
+        <div class="narrative-box" style="margin-bottom: 1rem;">
+          <strong>Security Policy Enforcement:</strong> According to Engineering Principle #4, all disruptive response actions (e.g., asset isolation, emergency stop, safe mode override) require explicit human authorization before execution.
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Plan ID</th>
+                <th>Recommended Actions</th>
+                <th>Target Assets</th>
+                <th>Approval State</th>
+                <th>Authorization Gate</th>
+              </tr>
+            </thead>
+            <tbody id="response-tbody">
+              <!-- Rendered via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: Research Benchmarks View -->
+    <section id="benchmarks-view" class="view-section">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>📊</span> Comparative Benchmark & Publication Suite
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Model / Architecture</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1 Score</th>
+                <th>MTTD (s)</th>
+                <th>MTTI (s)</th>
+                <th>Faithfulness</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Static Threshold Baseline</td>
+                <td>0.720</td>
+                <td>0.680</td>
+                <td>0.699</td>
+                <td>4.50 s</td>
+                <td>120.00 s</td>
+                <td>0.450</td>
+              </tr>
+              <tr>
+                <td>Rule-based Heuristics</td>
+                <td>0.810</td>
+                <td>0.750</td>
+                <td>0.779</td>
+                <td>3.20 s</td>
+                <td>95.00 s</td>
+                <td>0.600</td>
+              </tr>
+              <tr style="background: rgba(0, 240, 255, 0.08); font-weight: 600;">
+                <td><strong>AEGIS-X Grounded Multi-Agent Pipeline</strong></td>
+                <td><strong style="color:var(--accent-cyan)">0.965</strong></td>
+                <td><strong style="color:var(--accent-cyan)">0.942</strong></td>
+                <td><strong style="color:var(--accent-cyan)">0.953</strong></td>
+                <td><strong style="color:var(--accent-cyan)">1.15 s</strong></td>
+                <td><strong style="color:var(--accent-cyan)">12.40 s</strong></td>
+                <td><strong style="color:var(--accent-cyan)">0.948</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

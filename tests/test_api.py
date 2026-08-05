@@ -15,3 +15,10 @@ def test_platform_status() -> None:
     response = client.get("/api/v1/status")
     assert response.status_code == 200
     assert response.json()["platform"] == "AEGIS-X"
+
+
+def test_web_dashboard() -> None:
+    response = client.get("/web")
+    assert response.status_code == 200
+    assert "AEGIS-X — Enterprise Cyber-Physical Security Platform" in response.text
+
