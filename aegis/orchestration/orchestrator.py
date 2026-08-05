@@ -85,7 +85,8 @@ class Phase5Orchestrator:
             UncertaintyAssessment(
                 str(item["hypothesis_id"]), float(item["calibrated_confidence"]),
                 ConfidenceBand(str(item["confidence_band"])), float(item["evidence_diversity"]),
-                float(item["citation_coverage"]), float(item["inference_penalty"]),
+                float(item["citation_coverage"]),
+                float(item.get("contradiction_penalty", item.get("inference_penalty", 0.0))),
                 tuple(item["missing_evidence"]), tuple(item["contradictions"]),
             )
             for item in payloads

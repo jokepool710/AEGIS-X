@@ -14,8 +14,10 @@ from aegis.investigation.artifact_store import (
     InvestigationArtifactStore,
 )
 from aegis.investigation.investigator import IncidentInvestigator
+from aegis.workflow.case import CaseStatus, InvestigationCaseStore
+from aegis.workflow.feedback import FeedbackEngine, FeedbackType
 
-app = FastAPI(title="AEGIS-X API", version="0.4.0")
+app = FastAPI(title="AEGIS-X API", version="0.6.0")
 
 AlertStatus = Literal["open", "acknowledged", "investigating", "resolved", "dismissed"]
 IncidentStatus = Literal["open", "investigating", "contained", "resolved", "dismissed"]
@@ -29,6 +31,25 @@ class AlertStatusUpdate(BaseModel):
 class IncidentStatusUpdate(BaseModel):
     status: IncidentStatus
     note: str | None = None
+
+
+class CreateCaseRequest(BaseModel):
+    incident_id: str
+    title: str | None = None
+    assignee: str | None = None
+
+
+class UpdateCaseStatusRequest(BaseModel):
+    status: CaseStatus
+    note: str | None = None
+
+
+class SubmitFeedbackRequest(BaseModel):
+    analyst_id: str
+    feedback_type: FeedbackType
+    target_id: str
+    adjusted_confidence: float | None = None
+    comment: str | None = None
 
 
 def register_incident_analysis(analysis: IncidentAnalysis) -> None:
@@ -112,13 +133,92 @@ def investigate_incident(incident_id: str) -> dict[str, object]:
     return IncidentInvestigator().investigate(analysis).to_dict()
 
 
+# --- Phase 6 Investigation Workflow & Case Management API ---
+
+@app.post("/api/v1/cases")
+def create_case(req: CreateCaseRequest) -> dict[str, object]:
+    storage = TelemetryStore()
+    case_store = InvestigationCaseStore(storage)
+    case = case_store.create(req.incident_id, req.title, req.assignee)
+    return case.to_dict()
+
+
+@app.get("/api/v1/cases")
+def list_cases(limit: int = Query(default=100, ge=1, le=500), status: CaseStatus | None = None) -> dict[str, object]:
+    storage = TelemetryStore()
+    case_store = InvestigationCaseStore(storage)
+    cases = case_store.list(status, limit)
+    return {"count": len(cases), "cases": [case.to_dict() for case in cases]}
+
+
+@app.get("/api/v1/cases/{case_id}")
+def get_case_dossier(case_id: str) -> dict[str, object]:
+    storage = TelemetryStore()
+    case_store = InvestigationCaseStore(storage)
+    try:
+        dossier = case_store.build_dossier(case_id)
+        return dossier.to_dict()
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="investigation case not found") from exc
+
+
+@app.patch("/api/v1/cases/{case_id}/status")
+def update_case_status(case_id: str, req: UpdateCaseStatusRequest) -> dict[str, object]:
+    storage = TelemetryStore()
+    case_store = InvestigationCaseStore(storage)
+    try:
+        updated = case_store.transition(case_id, req.status, req.note)
+        return updated.to_dict()
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="investigation case not found") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@app.post("/api/v1/cases/{case_id}/feedback")
+def submit_case_feedback(case_id: str, req: SubmitFeedbackRequest) -> dict[str, object]:
+    storage = TelemetryStore()
+    case_store = InvestigationCaseStore(storage)
+    try:
+        case = case_store.get(case_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="investigation case not found") from exc
+
+    feedback_engine = FeedbackEngine(storage)
+    try:
+        fb = feedback_engine.submit(
+            case_id=case.case_id,
+            incident_id=case.incident_id,
+            analyst_id=req.analyst_id,
+            feedback_type=req.feedback_type,
+            target_id=req.target_id,
+            adjusted_confidence=req.adjusted_confidence,
+            comment=req.comment,
+        )
+        return fb.to_dict()
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/api/v1/cases/{case_id}/provenance")
+def get_case_provenance(case_id: str) -> dict[str, object]:
+    storage = TelemetryStore()
+    case_store = InvestigationCaseStore(storage)
+    try:
+        dossier = case_store.build_dossier(case_id)
+        return dossier.provenance.to_dict()
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="investigation case not found") from exc
+
+
 @app.get("/api/v1/status")
 def platform_status() -> dict[str, object]:
     return {
-        "platform": "AEGIS-X", "phase": "evidence-grounded-investigation",
+        "platform": "AEGIS-X", "phase": "investigation-workflow-and-feedback",
         "components": {
             "api": "online", "telemetry": "active", "detection": "active",
             "attack_graph": "active", "incident_correlation": "active",
-            "investigator": "active", "response": "planned",
+            "investigator": "active", "orchestration": "active",
+            "workflow": "active", "provenance": "active", "response": "planned",
         },
     }
