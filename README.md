@@ -73,7 +73,7 @@ MQTT sensor simulation
 - [x] Phase 5 — Autonomous investigation orchestration, human approval gates, decision auditability, and Phase 5 E2E validation
 - [x] Phase 6 — Investigation workflow, analyst feedback, case evidence provenance, and Phase 6 E2E validation
 - [x] Phase 7 — Human-approved response orchestration, playbooks, approval state machines, execution rollback, and Phase 7 E2E validation
-- [ ] Phase 8 — Research benchmarking, comparative evaluation, and publication artifacts
+- [x] Phase 8 — Research benchmarking, comparative evaluation, publication artifacts, and Phase 8 E2E validation
 
 ## Phase 3 Architecture
 
@@ -158,6 +158,19 @@ Incident / Case / ATT&CK Mapping
 
 The full architecture, component responsibilities, and E2E completion contract are documented in `docs/PHASE7_ARCHITECTURE.md`.
 
+## Phase 8 Architecture
+
+Phase 8 introduces research benchmarking, quantitative performance comparisons, and LaTeX publication artifacts:
+
+```text
+AEGIS-X Pipeline Execution
+  -> Research Benchmark Suite (Precision, Recall, F1, MTTD, MTTI, Faithfulness)
+  -> Benchmark Comparator (Comparative Markdown & LaTeX tables)
+  -> Publication Artifact Generator (LaTeX paper tables & research docs)
+```
+
+The full architecture, component responsibilities, and E2E completion contract are documented in `docs/PHASE8_ARCHITECTURE.md`.
+
 ## Validation
 
 The main CI pipeline validates:
@@ -171,6 +184,7 @@ Ruff lint
   -> Phase 5 orchestration E2E
   -> Phase 6 workflow E2E
   -> Phase 7 response E2E
+  -> Phase 8 benchmark E2E
 ```
 
 The Phase 3 E2E contract verifies incident clustering, alert and asset membership, attack-graph generation, ATT&CK for ICS mappings, risk scoring, persistence, API listing/detail retrieval, lifecycle transition, stable incident identity, and idempotent reruns.
@@ -182,6 +196,8 @@ The Phase 5 E2E contract verifies autonomous investigation task planning, safe t
 The Phase 6 E2E contract verifies end-to-end anomaly processing, correlation, incident creation, case lifecycle management, analyst feedback collection, hypothesis confidence adjustment, SHA-256 evidence chain-of-custody verification, and case dossier compilation.
 
 The Phase 7 E2E contract verifies response plan generation from incident risk and ATT&CK techniques, mandatory pending human approval requests for disruptive actions, human authorization grant workflows, authorized execution of response actions, and reversible action rollback workflows.
+
+The Phase 8 E2E contract verifies quantitative comparative benchmark execution across security baseline models, calculation of F1/MTTD/MTTI/faithfulness metrics, and automated LaTeX/Markdown publication artifact generation.
 
 ## Responsible Use
 
