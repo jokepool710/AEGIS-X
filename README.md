@@ -33,6 +33,10 @@ MQTT sensor simulation
   -> analyst decision support engine
   -> approval policy gates
   -> tamper-evident decision ledger
+  -> investigation case management
+  -> evidence chain-of-custody provenance
+  -> analyst feedback engine
+  -> case dossier aggregation
 ```
 
 ## Core Domains
@@ -47,6 +51,7 @@ MQTT sensor simulation
 - Risk prioritization
 - Evidence-grounded AI investigation
 - Autonomous investigation orchestration
+- Investigation case workflow & evidence provenance
 - Human-approved response orchestration
 
 ## Engineering Principles
@@ -66,7 +71,7 @@ MQTT sensor simulation
 - [x] Phase 3 — Asset topology, alert enrichment, correlation, incident clustering, persistent incidents, attack graphs, ATT&CK for ICS mapping, risk prioritization, Incident API, and Phase 3 E2E validation
 - [x] Phase 4 — Evidence-grounded AI incident investigator, faithfulness evaluation, and Phase 4 E2E validation
 - [x] Phase 5 — Autonomous investigation orchestration, human approval gates, decision auditability, and Phase 5 E2E validation
-- [ ] Phase 6 — Investigation workflow, analyst feedback, and case evidence provenance *(in progress)*
+- [x] Phase 6 — Investigation workflow, analyst feedback, case evidence provenance, and Phase 6 E2E validation
 - [ ] Phase 7 — Human-approved response orchestration
 - [ ] Phase 8 — Research benchmarking, comparative evaluation, and publication artifacts
 
@@ -122,6 +127,21 @@ Phase 4 InvestigationResult
 
 The full architecture, component responsibilities, and E2E completion contract are documented in `docs/PHASE5_ARCHITECTURE.md`.
 
+## Phase 6 Architecture
+
+Phase 6 introduces investigation case management, analyst feedback consensus, and case evidence provenance:
+
+```text
+Phase 4 & 5 Investigation Outputs
+  -> Investigation Case Store (Case creation, assignment, lifecycle)
+  -> Evidence Chain of Custody (SHA-256 payload hashing & integrity)
+  -> Analyst Feedback Engine (Human hypothesis accept/reject/adjust)
+  -> Unified Case Dossier (Aggregated case evidence package)
+  -> Workflow & Case API (/api/v1/cases)
+```
+
+The full architecture, component responsibilities, and E2E completion contract are documented in `docs/PHASE6_ARCHITECTURE.md`.
+
 ## Validation
 
 The main CI pipeline validates:
@@ -133,6 +153,7 @@ Ruff lint
   -> Phase 3 incident E2E
   -> Phase 4 investigator E2E
   -> Phase 5 orchestration E2E
+  -> Phase 6 workflow E2E
 ```
 
 The Phase 3 E2E contract verifies incident clustering, alert and asset membership, attack-graph generation, ATT&CK for ICS mappings, risk scoring, persistence, API listing/detail retrieval, lifecycle transition, stable incident identity, and idempotent reruns.
@@ -140,6 +161,8 @@ The Phase 3 E2E contract verifies incident clustering, alert and asset membershi
 The Phase 4 E2E contract verifies evidence bundle construction from Phase 3 output, timeline reconstruction, hypothesis generation, uncertainty quantification, grounded narrative synthesis, faithfulness scoring, persistent artifact storage, and API retrieval.
 
 The Phase 5 E2E contract verifies autonomous investigation task planning, safe tool execution, evidence acquisition, dynamic hypothesis re-evaluation, analyst decision support ranking, and cryptographic hash-chain integrity of the persistent decision ledger.
+
+The Phase 6 E2E contract verifies end-to-end anomaly processing, correlation, incident creation, case lifecycle management, analyst feedback collection, hypothesis confidence adjustment, SHA-256 evidence chain-of-custody verification, and case dossier compilation.
 
 ## Responsible Use
 
