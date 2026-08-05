@@ -1,8 +1,10 @@
 from dataclasses import asdict
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from aegis.common.storage import TelemetryStore
@@ -22,6 +24,10 @@ from aegis.workflow.case import CaseDossier, CaseStatus, InvestigationCaseStore
 from aegis.workflow.feedback import FeedbackEngine, FeedbackType
 
 app = FastAPI(title="AEGIS-X API", version="0.7.0")
+
+web_dir = Path(__file__).resolve().parent.parent / "web"
+if web_dir.exists():
+    app.mount("/web", StaticFiles(directory=str(web_dir), html=True), name="web")
 
 AlertStatus = Literal["open", "acknowledged", "investigating", "resolved", "dismissed"]
 IncidentStatus = Literal["open", "investigating", "contained", "resolved", "dismissed"]
