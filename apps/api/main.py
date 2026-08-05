@@ -14,10 +14,14 @@ from aegis.investigation.artifact_store import (
     InvestigationArtifactStore,
 )
 from aegis.investigation.investigator import IncidentInvestigator
-from aegis.workflow.case import CaseStatus, InvestigationCaseStore
+from aegis.response.actions import ActionSeverity, ActionType, ResponseAction
+from aegis.response.approvals import ResponseApprovalEngine
+from aegis.response.executor import ResponseExecutionEngine
+from aegis.response.store import PersistentResponseStore
+from aegis.workflow.case import CaseDossier, CaseStatus, InvestigationCaseStore
 from aegis.workflow.feedback import FeedbackEngine, FeedbackType
 
-app = FastAPI(title="AEGIS-X API", version="0.6.0")
+app = FastAPI(title="AEGIS-X API", version="0.7.0")
 
 AlertStatus = Literal["open", "acknowledged", "investigating", "resolved", "dismissed"]
 IncidentStatus = Literal["open", "investigating", "contained", "resolved", "dismissed"]
@@ -52,6 +56,37 @@ class SubmitFeedbackRequest(BaseModel):
     comment: str | None = None
 
 
+class CreateResponsePlanRequest(BaseModel):
+    incident_id: str
+    case_id: str | None = None
+    technique_ids: list[str] = ["T0831"]
+    risk_score: float = 0.75
+    affected_assets: list[str] = ["plc-01"]
+
+
+class GrantApprovalRequest(BaseModel):
+    approver: str
+    reason: str | None = None
+
+
+class RejectApprovalRequest(BaseModel):
+    approver: str
+    reason: str
+
+
+class ExecuteActionRequest(BaseModel):
+    plan_id: str
+    action_id: str
+    action_type: ActionType
+    target_id: str
+    severity: ActionSeverity
+    description: str
+    parameters: dict[str, object] = {}
+    reversible: bool = True
+    requires_approval: bool = True
+    approval_request_id: str | None = None
+
+
 def register_incident_analysis(analysis: IncidentAnalysis) -> None:
     """Durably publish a completed Phase 3 analysis for Phase 4 investigation."""
     InvestigationArtifactStore(TelemetryStore()).save(analysis)
@@ -71,7 +106,8 @@ def telemetry_health() -> dict[str, object]:
     stats = TelemetryStore().health_stats()
     return {
         "status": "receiving" if stats["last_ingested_at"] is not None else "waiting_for_telemetry",
-        "timestamp": datetime.now(UTC).isoformat(), "storage": stats,
+        "timestamp": datetime.now(UTC).isoformat(),
+        "storage": stats,
     }
 
 
@@ -156,7 +192,7 @@ def get_case_dossier(case_id: str) -> dict[str, object]:
     storage = TelemetryStore()
     case_store = InvestigationCaseStore(storage)
     try:
-        dossier = case_store.build_dossier(case_id)
+        dossier: CaseDossier = case_store.build_dossier(case_id)
         return dossier.to_dict()
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="investigation case not found") from exc
@@ -211,14 +247,109 @@ def get_case_provenance(case_id: str) -> dict[str, object]:
         raise HTTPException(status_code=404, detail="investigation case not found") from exc
 
 
+# --- Phase 7 Response Orchestration API ---
+
+@app.post("/api/v1/response/plans", status_code=201)
+def create_response_plan(req: CreateResponsePlanRequest) -> dict[str, object]:
+    storage = TelemetryStore()
+    response_store = PersistentResponseStore(storage)
+    plan = response_store.create_plan(
+        incident_id=req.incident_id,
+        case_id=req.case_id,
+        technique_ids=tuple(req.technique_ids),
+        risk_score=req.risk_score,
+        affected_assets=req.affected_assets,
+    )
+    return plan.to_dict()
+
+
+@app.get("/api/v1/response/plans/{plan_id}")
+def get_response_plan(plan_id: str) -> dict[str, object]:
+    storage = TelemetryStore()
+    response_store = PersistentResponseStore(storage)
+    try:
+        return response_store.get_plan(plan_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="response plan not found") from exc
+
+
+@app.post("/api/v1/response/requests/{request_id}/grant")
+def grant_approval(request_id: str, req: GrantApprovalRequest) -> dict[str, object]:
+    storage = TelemetryStore()
+    engine = ResponseApprovalEngine(storage)
+    try:
+        approved = engine.grant(request_id=request_id, approver=req.approver, reason=req.reason)
+        return approved.to_dict()
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="approval request not found") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/v1/response/requests/{request_id}/reject")
+def reject_approval(request_id: str, req: RejectApprovalRequest) -> dict[str, object]:
+    storage = TelemetryStore()
+    engine = ResponseApprovalEngine(storage)
+    try:
+        rejected = engine.reject(request_id=request_id, approver=req.approver, reason=req.reason)
+        return rejected.to_dict()
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="approval request not found") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/api/v1/response/actions/execute")
+def execute_response_action(req: ExecuteActionRequest) -> dict[str, object]:
+    storage = TelemetryStore()
+    engine = ResponseExecutionEngine(storage)
+
+    action = ResponseAction(
+        action_id=req.action_id,
+        target_id=req.target_id,
+        action_type=req.action_type,
+        severity=req.severity,
+        description=req.description,
+        parameters=req.parameters,
+        reversible=req.reversible,
+        requires_approval=req.requires_approval,
+    )
+
+    try:
+        res = engine.execute(plan_id=req.plan_id, action=action, approval_request_id=req.approval_request_id)
+        return res.to_dict()
+    except PermissionError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
+
+
+@app.post("/api/v1/response/executions/{execution_id}/rollback")
+def rollback_response_execution(execution_id: str) -> dict[str, object]:
+    storage = TelemetryStore()
+    engine = ResponseExecutionEngine(storage)
+    try:
+        res = engine.rollback(execution_id)
+        return res.to_dict()
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail="execution record not found") from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @app.get("/api/v1/status")
 def platform_status() -> dict[str, object]:
     return {
-        "platform": "AEGIS-X", "phase": "investigation-workflow-and-feedback",
+        "platform": "AEGIS-X",
+        "phase": "human-approved-response-orchestration",
         "components": {
-            "api": "online", "telemetry": "active", "detection": "active",
-            "attack_graph": "active", "incident_correlation": "active",
-            "investigator": "active", "orchestration": "active",
-            "workflow": "active", "provenance": "active", "response": "planned",
+            "api": "online",
+            "telemetry": "active",
+            "detection": "active",
+            "attack_graph": "active",
+            "incident_correlation": "active",
+            "investigator": "active",
+            "orchestration": "active",
+            "workflow": "active",
+            "provenance": "active",
+            "response": "active",
         },
     }

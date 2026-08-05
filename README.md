@@ -72,7 +72,7 @@ MQTT sensor simulation
 - [x] Phase 4 — Evidence-grounded AI incident investigator, faithfulness evaluation, and Phase 4 E2E validation
 - [x] Phase 5 — Autonomous investigation orchestration, human approval gates, decision auditability, and Phase 5 E2E validation
 - [x] Phase 6 — Investigation workflow, analyst feedback, case evidence provenance, and Phase 6 E2E validation
-- [ ] Phase 7 — Human-approved response orchestration
+- [x] Phase 7 — Human-approved response orchestration, playbooks, approval state machines, execution rollback, and Phase 7 E2E validation
 - [ ] Phase 8 — Research benchmarking, comparative evaluation, and publication artifacts
 
 ## Phase 3 Architecture
@@ -142,6 +142,22 @@ Phase 4 & 5 Investigation Outputs
 
 The full architecture, component responsibilities, and E2E completion contract are documented in `docs/PHASE6_ARCHITECTURE.md`.
 
+## Phase 7 Architecture
+
+Phase 7 introduces human-approved response orchestration, playbooks, approval state machines, and execution rollbacks:
+
+```text
+Incident / Case / ATT&CK Mapping
+  -> Playbook Engine (Playbook generation & recommended actions)
+  -> Response Approval Engine (Mandatory pending approval requests)
+  -> Human Approval Gate (Grant / Reject authorization)
+  -> Response Execution Engine (Executes authorized actions)
+  -> Rollback Engine (Reverses execution for reversible actions)
+  -> Response API (/api/v1/response)
+```
+
+The full architecture, component responsibilities, and E2E completion contract are documented in `docs/PHASE7_ARCHITECTURE.md`.
+
 ## Validation
 
 The main CI pipeline validates:
@@ -154,6 +170,7 @@ Ruff lint
   -> Phase 4 investigator E2E
   -> Phase 5 orchestration E2E
   -> Phase 6 workflow E2E
+  -> Phase 7 response E2E
 ```
 
 The Phase 3 E2E contract verifies incident clustering, alert and asset membership, attack-graph generation, ATT&CK for ICS mappings, risk scoring, persistence, API listing/detail retrieval, lifecycle transition, stable incident identity, and idempotent reruns.
@@ -163,6 +180,8 @@ The Phase 4 E2E contract verifies evidence bundle construction from Phase 3 outp
 The Phase 5 E2E contract verifies autonomous investigation task planning, safe tool execution, evidence acquisition, dynamic hypothesis re-evaluation, analyst decision support ranking, and cryptographic hash-chain integrity of the persistent decision ledger.
 
 The Phase 6 E2E contract verifies end-to-end anomaly processing, correlation, incident creation, case lifecycle management, analyst feedback collection, hypothesis confidence adjustment, SHA-256 evidence chain-of-custody verification, and case dossier compilation.
+
+The Phase 7 E2E contract verifies response plan generation from incident risk and ATT&CK techniques, mandatory pending human approval requests for disruptive actions, human authorization grant workflows, authorized execution of response actions, and reversible action rollback workflows.
 
 ## Responsible Use
 
