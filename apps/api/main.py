@@ -24,7 +24,7 @@ from aegis.response.store import PersistentResponseStore
 from aegis.workflow.case import CaseDossier, CaseStatus, InvestigationCaseStore
 from aegis.workflow.feedback import FeedbackEngine, FeedbackType
 
-app = FastAPI(title="AEGIS-X API", version="0.7.0")
+app = FastAPI(title="AEGIS-X API", version="1.0.0")
 
 web_dir = Path(__file__).resolve().parent.parent / "web"
 if web_dir.exists():
