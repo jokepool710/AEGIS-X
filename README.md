@@ -1,5 +1,13 @@
 # AEGIS-X
 
+[![Build Status](https://img.shields.io/github/actions/workflow/status/jokepool710/AEGIS-X/ci.yml?branch=main)](https://github.com/jokepool710/AEGIS-X/actions)
+[![Release](https://img.shields.io/github/v/release/jokepool710/AEGIS-X)](https://github.com/jokepool710/AEGIS-X/releases)
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
+[![License](https://img.shields.io/github/license/jokepool710/AEGIS-X)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/jokepool710/AEGIS-X)](https://github.com/jokepool710/AEGIS-X/stargazers)
+[![Forks](https://img.shields.io/github/forks/jokepool710/AEGIS-X)](https://github.com/jokepool710/AEGIS-X/network/members)
+[![Issues](https://img.shields.io/github/issues/jokepool710/AEGIS-X)](https://github.com/jokepool710/AEGIS-X/issues)
+
 **Autonomous Cyber-Physical Security Platform**
 
 AEGIS-X is a research-driven platform for attack emulation, telemetry ingestion, anomaly detection, cyber-physical incident correlation, attack-graph reasoning, AI-assisted investigation, and human-approved response orchestration across IT, IoT, OT, and cyber-physical environments.
