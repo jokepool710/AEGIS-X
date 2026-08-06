@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEGIS-X — AI-Powered Cyber-Physical Security Platform</title>
+  <meta name="description" content="AEGIS-X is an AI-powered cyber-physical security platform that detects anomalies, correlates threats, assists investigations, and helps security teams protect industrial infrastructure with explainable AI.">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" id="navbar">
+    <div class="brand">
+      <div class="brand-icon">AX</div>
+      <div class="brand-title">AEGIS-X</div>
+    </div>
+
+    <div class="nav-menu">
+      <a href="#platform" class="nav-link">Platform</a>
+      <a href="#research" class="nav-link">Research</a>
+      <a href="#architecture" class="nav-link">Architecture</a>
+      <a href="https://github.com/jokepool710/AEGIS-X" class="nav-link" target="_blank" rel="noopener">Documentation</a>
+      <a href="https://github.com/jokepool710/AEGIS-X" class="nav-link" target="_blank" rel="noopener">GitHub</a>
+    </div>
+
+    <a href="index.html" class="btn btn-primary">Launch Demo</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-grid-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Industrial AI &bull; Cyber-Physical Security</div>
+      <h1 class="hero-title">Engineering Trust Into Every Decision.</h1>
+      <p class="hero-subtitle">AEGIS-X is an AI-powered cyber-physical security platform that detects anomalies, correlates threats, assists investigations, and helps security teams protect industrial infrastructure with explainable AI.</p>
+      <div class="hero-actions">
+        <a href="#platform" class="btn btn-primary btn-lg">Explore Platform</a>
+        <a href="#research" class="btn btn-secondary btn-lg">View Research</a>
+      </div>
+    </div>
+    <!-- Floating particles -->
+    <canvas id="heroParticles"></canvas>
+  </section>
+
+  <!-- Metrics Bar -->
+  <section class="metrics-bar">
+    <div class="metrics-row">
+      <div class="card metric-card" data-count="8">
+        <div class="card-value"><span class="count-up">8</span></div>
+        <div class="card-title">Phases Delivered</div>
+        <div class="card-subtext">Complete vertical slice</div>
+      </div>
+      <div class="card metric-card" data-count="94.8">
+        <div class="card-value"><span class="count-up">94.8</span>%</div>
+        <div class="card-title">Citation Faithfulness</div>
+        <div class="card-subtext">Grounded AI verification</div>
+      </div>
+      <div class="card metric-card" data-count="6">
+        <div class="card-value"><span class="count-up">6</span></div>
+        <div class="card-title">Core Engines</div>
+        <div class="card-subtext">Detection to response</div>
+      </div>
+      <div class="card metric-card" data-count="100">
+        <div class="card-value"><span class="count-up">100</span>%</div>
+        <div class="card-title">Human-in-the-Loop</div>
+        <div class="card-subtext">Approval-gated actions</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Capabilities Section -->
+  <section class="content-section" id="platform">
+    <div class="section-header">
+      <div class="section-badge">Core Capabilities</div>
+      <h2 class="section-title">An End-to-End Security Pipeline</h2>
+      <p class="section-subtitle">From telemetry ingestion to human-approved response — every layer is engineered for trust, transparency, and industrial-grade resilience.</p>
+    </div>
+    <div class="capabilities-grid">
+      <div class="panel capability-card">
+        <div class="capability-icon">⚡</div>
+        <h3>Anomaly Detection</h3>
+        <p>Sliding-window feature extraction with statistical and Isolation Forest models for real-time detection across MQTT, OPC UA, and Modbus telemetry streams.</p>
+      </div>
+      <div class="panel capability-card">
+        <div class="capability-icon">🔗</div>
+        <h3>Alert Correlation</h3>
+        <p>Temporal and topological clustering correlates isolated anomalies into unified security incidents with attack-graph reasoning and ATT&CK for ICS mapping.</p>
+      </div>
+      <div class="panel capability-card">
+        <div class="capability-icon">🧠</div>
+        <h3>AI Investigation</h3>
+        <p>Evidence-grounded hypothesis generation with uncertainty quantification, citation faithfulness evaluation, and narrative synthesis for analyst decision support.</p>
+      </div>
+      <div class="panel capability-card">
+        <div class="capability-icon">🔒</div>
+        <h3>Human-Approved Response</h3>
+        <p>Approval policy gates ensure all disruptive response actions — asset isolation, emergency stop, safe mode override — require explicit human authorization.</p>
+      </div>
+      <div class="panel capability-card">
+        <div class="capability-icon">📁</div>
+        <h3>Case Management</h3>
+        <p>Investigation case lifecycle with case dossier compilation, evidence chain-of-custody provenance, and tamper-evident decision ledger for full auditability.</p>
+      </div>
+      <div class="panel capability-card">
+        <div class="capability-icon">📊</div>
+        <h3>Research Benchmarks</h3>
+        <p>Comparative evaluation harness measuring precision, recall, F1, MTTD, MTTI, and faithfulness against static threshold and rule-based baselines.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture Section -->
+  <section class="content-section section-alt" id="architecture">
+    <div class="section-header">
+      <div class="section-badge">System Design</div>
+      <h2 class="section-title">Vertical Slice Architecture</h2>
+      <p class="section-subtitle">Each phase builds on the previous, creating a fully integrated pipeline from sensor simulation to response orchestration.</p>
+    </div>
+    <div class="architecture-timeline">
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="panel timeline-card">
+          <div class="timeline-phase">Phase 1–2</div>
+          <h4>Telemetry & Detection</h4>
+          <p>MQTT sensor simulation, ingestion persistence, sliding-window feature extraction, statistical + Isolation Forest anomaly detection, unified scoring.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="panel timeline-card">
+          <div class="timeline-phase">Phase 3</div>
+          <h4>Correlation & Attack Graphs</h4>
+          <p>Asset topology enrichment, alert correlation, incident clustering, attack graph construction, ATT&CK for ICS mapping, risk prioritization.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="panel timeline-card">
+          <div class="timeline-phase">Phase 4</div>
+          <h4>AI-Assisted Investigation</h4>
+          <p>Evidence bundle construction, timeline reconstruction, hypothesis generation, uncertainty quantification, grounded narrative synthesis, faithfulness evaluation.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="panel timeline-card">
+          <div class="timeline-phase">Phase 5</div>
+          <h4>Autonomous Orchestration</h4>
+          <p>Investigation task planning (DAG), safe tool registry & execution, evidence acquisition loop, hypothesis re-evaluation loop.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="panel timeline-card">
+          <div class="timeline-phase">Phase 6</div>
+          <h4>Case Management & Provenance</h4>
+          <p>Investigation case lifecycle, evidence chain-of-custody, analyst feedback engine, case dossier aggregation, tamper-evident decision ledger.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-marker"></div>
+        <div class="panel timeline-card">
+          <div class="timeline-phase">Phase 7–8</div>
+          <h4>Response & Research</h4>
+          <p>Human-approved response orchestration with approval policy gates, comparative benchmark evaluation suite, and publication-ready artifacts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Research Benchmarks Section -->
+  <section class="content-section" id="research">
+    <div class="section-header">
+      <div class="section-badge">Empirical Results</div>
+      <h2 class="section-title">Benchmark Performance</h2>
+      <p class="section-subtitle">AEGIS-X's grounded multi-agent pipeline is validated against conventional baselines across detection, investigation, and faithfulness metrics.</p>
+    </div>
+    <div class="panel benchmark-panel">
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Model / Architecture</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1 Score</th>
+              <th>MTTD</th>
+              <th>MTTI</th>
+              <th>Faithfulness</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Static Threshold Baseline</td>
+              <td>0.720</td>
+              <td>0.680</td>
+              <td>0.699</td>
+              <td>4.50 s</td>
+              <td>120.00 s</td>
+              <td>0.450</td>
+            </tr>
+            <tr>
+              <td>Rule-based Heuristics</td>
+              <td>0.810</td>
+              <td>0.750</td>
+              <td>0.779</td>
+              <td>3.20 s</td>
+              <td>95.00 s</td>
+              <td>0.600</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>AEGIS-X Grounded Multi-Agent Pipeline</strong></td>
+              <td><strong class="accent-value">0.965</strong></td>
+              <td><strong class="accent-value">0.942</strong></td>
+              <td><strong class="accent-value">0.953</strong></td>
+              <td><strong class="accent-value">1.15 s</strong></td>
+              <td><strong class="accent-value">12.40 s</strong></td>
+              <td><strong class="accent-value">0.948</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section class="content-section section-alt" id="stack">
+    <div class="section-header">
+      <div class="section-badge">Technology</div>
+      <h2 class="section-title">Built for Industrial Scale</h2>
+      <p class="section-subtitle">Open-source, modular, and designed for real-world deployment across IT, IoT, OT, and cyber-physical environments.</p>
+    </div>
+    <div class="stack-grid">
+      <div class="card stack-card">
+        <div class="stack-icon">🐍</div>
+        <div class="stack-name">Python</div>
+        <div class="stack-desc">Core pipeline & AI</div>
+      </div>
+      <div class="card stack-card">
+        <div class="stack-icon">🔬</div>
+        <div class="stack-name">scikit-learn</div>
+        <div class="stack-desc">Anomaly detection</div>
+      </div>
+      <div class="card stack-card">
+        <div class="stack-icon">⚡</div>
+        <div class="stack-name">FastAPI</div>
+        <div class="stack-desc">REST API layer</div>
+      </div>
+      <div class="card stack-card">
+        <div class="stack-icon">📡</div>
+        <div class="stack-name">MQTT</div>
+        <div class="stack-desc">Telemetry ingestion</div>
+      </div>
+      <div class="card stack-card">
+        <div class="stack-icon">🐋</div>
+        <div class="stack-name">Docker</div>
+        <div class="stack-desc">Container deployment</div>
+      </div>
+      <div class="card stack-card">
+        <div class="stack-icon">🔄</div>
+        <div class="stack-name">GitHub Actions</div>
+        <div class="stack-desc">CI/CD pipeline</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="hero-glow cta-glow"></div>
+    <div class="cta-content">
+      <h2 class="cta-title">Ready to Protect Critical Infrastructure?</h2>
+      <p class="cta-subtitle">Explore the platform, review the research, or launch the live demo to see AEGIS-X in action.</p>
+      <div class="hero-actions">
+        <a href="index.html" class="btn btn-primary btn-lg">Launch Demo</a>
+        <a href="https://github.com/jokepool710/AEGIS-X" class="btn btn-secondary btn-lg" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="brand">
+          <div class="brand-icon">AX</div>
+          <div class="brand-title">AEGIS-X</div>
+        </div>
+        <p class="footer-tagline">Autonomous Cyber-Physical Security Platform</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/jokepool710/AEGIS-X" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://github.com/jokepool710/AEGIS-X/blob/main/LICENSE" target="_blank" rel="noopener">License (EUPL-1.2)</a>
+        <a href="https://github.com/jokepool710/AEGIS-X/tree/main/docs" target="_blank" rel="noopener">Documentation</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2024–2026 AEGIS-X Contributors. Open-source under EUPL-1.2.</span>
+    </div>
+  </footer>
+
+  <script src="landing.js"></script>
+</body>
+</html>
