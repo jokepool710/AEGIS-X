@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -28,6 +29,12 @@ app = FastAPI(title="AEGIS-X API", version="0.7.0")
 web_dir = Path(__file__).resolve().parent.parent / "web"
 if web_dir.exists():
     app.mount("/web", StaticFiles(directory=str(web_dir), html=True), name="web")
+
+
+@app.get("/")
+def root_redirect() -> RedirectResponse:
+    """Redirect root URL to the AEGIS-X landing page."""
+    return RedirectResponse(url="/web/landing.html")
 
 AlertStatus = Literal["open", "acknowledged", "investigating", "resolved", "dismissed"]
 IncidentStatus = Literal["open", "investigating", "contained", "resolved", "dismissed"]
