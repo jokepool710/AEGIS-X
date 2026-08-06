@@ -63,6 +63,29 @@ MQTT sensor simulation
 5. Reproduce experiments with versioned data, configurations, and metrics.
 6. Treat end-to-end CI validation as a phase completion gate.
 
+## Quickstart & Local Deployment
+
+Launch the unified backend API and web interface with a single command:
+
+```bash
+# Install dependencies
+pip install -e .
+
+# Launch the unified platform (API + Landing Page + Command Center)
+python -m uvicorn apps.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+Once running, access:
+- **Landing Page:** [http://localhost:8000](http://localhost:8000)
+- **Command Center Dashboard:** [http://localhost:8000/web/index.html](http://localhost:8000/web/index.html)
+- **API Documentation & OpenAPI:** [http://localhost:8000/docs](http://localhost:8000/docs)
+
+Alternatively, run with Docker Compose:
+
+```bash
+docker-compose up --build
+```
+
 ## Roadmap
 
 - [x] Phase 0 — Foundation and architecture
