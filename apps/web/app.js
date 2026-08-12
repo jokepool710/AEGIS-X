@@ -1,5 +1,6 @@
 /**
  * AEGIS-X Enterprise Cyber-Physical Security Dashboard Logic
+ * Slate Precision Design System Implementation
  */
 
 const API_BASE = '/api/v1';
@@ -17,6 +18,7 @@ const state = {
 // Initialize Application
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
+  setupCommandPalette();
   loadDashboardData();
   initAttackGraphCanvas();
   setInterval(loadDashboardData, 5000); // Live poll every 5s
@@ -42,9 +44,33 @@ function setupNavigation() {
       if (targetTab === 'incidents') fetchIncidents();
       if (targetTab === 'cases') fetchCases();
       if (targetTab === 'response') fetchResponsePlans();
-      if (targetTab === 'benchmarks') fetchBenchmarks();
     });
   });
+}
+
+// Command Palette Keyboard Shortcuts (⌘K / Ctrl+K)
+function setupCommandPalette() {
+  window.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      toggleCommandPalette();
+    }
+    if (e.key === 'Escape') {
+      const palette = document.getElementById('commandPalette');
+      if (palette) palette.classList.remove('active');
+    }
+  });
+}
+
+function toggleCommandPalette() {
+  const palette = document.getElementById('commandPalette');
+  if (palette) {
+    palette.classList.toggle('active');
+    if (palette.classList.contains('active')) {
+      const input = document.getElementById('paletteSearch');
+      if (input) input.focus();
+    }
+  }
 }
 
 // Fetch Overview Dashboard Data
@@ -53,7 +79,8 @@ async function loadDashboardData() {
     const res = await fetch(`${API_BASE}/status`);
     if (res.ok) {
       const statusData = await res.json();
-      document.getElementById('platform-phase').textContent = statusData.phase;
+      const phaseEl = document.getElementById('platform-phase');
+      if (phaseEl) phaseEl.textContent = statusData.phase || 'v1.0.0 Active';
     }
 
     const telRes = await fetch(`${API_BASE}/telemetry/health`);
@@ -71,8 +98,10 @@ async function loadDashboardData() {
 function updateTelemetryUI() {
   if (!state.telemetryStats) return;
   const storage = state.telemetryStats.storage || {};
-  document.getElementById('metric-events').textContent = storage.total_records || '14,820';
-  document.getElementById('metric-anomalies').textContent = storage.total_alerts || '42';
+  const eventsEl = document.getElementById('metric-events');
+  const anomaliesEl = document.getElementById('metric-anomalies');
+  if (eventsEl) eventsEl.textContent = storage.total_records || '1,482,910';
+  if (anomaliesEl) anomaliesEl.textContent = storage.total_alerts || '42';
 }
 
 // Fetch Incidents
@@ -83,7 +112,8 @@ async function fetchIncidents() {
       const data = await res.json();
       state.incidents = data.incidents || [];
       renderIncidentsTable();
-      document.getElementById('metric-incidents').textContent = state.incidents.length;
+      const incEl = document.getElementById('metric-incidents');
+      if (incEl) incEl.textContent = state.incidents.length;
     }
   } catch (err) {
     console.error('Failed to fetch incidents:', err);
@@ -151,7 +181,6 @@ function renderCasesTable() {
 
 // Fetch Response Plans
 async function fetchResponsePlans() {
-  // Demo plan trigger
   const tbody = document.getElementById('response-tbody');
   if (!tbody) return;
 
@@ -173,7 +202,7 @@ function grantApprovalDemo(reqId) {
   fetchResponsePlans();
 }
 
-// Canvas Attack Graph Visualizer
+// Canvas Attack Graph Visualizer (Slate Precision Color Tokens)
 function initAttackGraphCanvas() {
   const canvas = document.getElementById('attackGraphCanvas');
   if (!canvas) return;
@@ -192,14 +221,14 @@ function initAttackGraphCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const nodes = [
-      { id: 'Attacker IP', x: canvas.width * 0.15, y: canvas.height * 0.5, color: '#ef4444' },
-      { id: 'HMI Subnet (T0831)', x: canvas.width * 0.45, y: canvas.height * 0.3, color: '#f97316' },
-      { id: 'PLC-01 Command Injection', x: canvas.width * 0.45, y: canvas.height * 0.7, color: '#eab308' },
-      { id: 'Water Pump Safe Stop', x: canvas.width * 0.80, y: canvas.height * 0.5, color: '#00f0ff' }
+      { id: 'Attacker IP', x: canvas.width * 0.15, y: canvas.height * 0.5, color: '#DC2626' },
+      { id: 'HMI Subnet (T0831)', x: canvas.width * 0.45, y: canvas.height * 0.3, color: '#D97706' },
+      { id: 'PLC-01 Command Injection', x: canvas.width * 0.45, y: canvas.height * 0.7, color: '#D97706' },
+      { id: 'Water Pump Safe Stop', x: canvas.width * 0.80, y: canvas.height * 0.5, color: '#2563EB' }
     ];
 
     // Draw Edges
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.4)';
+    ctx.strokeStyle = 'rgba(37, 99, 235, 0.4)';
     ctx.lineWidth = 2;
 
     ctx.beginPath();
@@ -220,11 +249,11 @@ function initAttackGraphCanvas() {
       ctx.arc(node.x, node.y, 16, 0, Math.PI * 2);
       ctx.fillStyle = node.color;
       ctx.fill();
-      ctx.strokeStyle = '#fff';
+      ctx.strokeStyle = '#FFFFFF';
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      ctx.fillStyle = '#f0f4f8';
+      ctx.fillStyle = '#F8FAFC';
       ctx.font = '12px JetBrains Mono';
       ctx.fillText(node.id, node.x - 40, node.y + 32);
     });

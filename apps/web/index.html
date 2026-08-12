@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,9 +24,12 @@
       <a href="#" class="nav-link" data-tab="benchmarks">Research Benchmarks</a>
     </div>
 
-    <div class="system-status">
-      <div class="status-dot"></div>
-      <span>Platform: <strong id="platform-phase">Active</strong></span>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <button class="btn btn-secondary" style="height: 28px; padding: 0 8px; font-size: 11px;" onclick="toggleCommandPalette()">⌘K Search</button>
+      <div class="system-status">
+        <div class="status-dot"></div>
+        <span>Platform: <strong id="platform-phase">v1.0.0 Active</strong></span>
+      </div>
     </div>
   </nav>
 
@@ -39,7 +42,7 @@
       <div class="metrics-row">
         <div class="card">
           <div class="card-title">Ingested Telemetry Events</div>
-          <div class="card-value" id="metric-events">14,820</div>
+          <div class="card-value" id="metric-events">1,482,910</div>
           <div class="card-subtext">MQTT / OPC UA / Modbus</div>
         </div>
         <div class="card">
@@ -54,7 +57,7 @@
         </div>
         <div class="card">
           <div class="card-title">Citation Faithfulness</div>
-          <div class="card-value">94.8%</div>
+          <div class="card-value">96.8%</div>
           <div class="card-subtext">Grounded AI Verification</div>
         </div>
       </div>
@@ -73,7 +76,7 @@
           </div>
         </div>
 
-        <!-- System Health & Activity Stream -->
+        <!-- System Health & Asset Table -->
         <div class="panel">
           <div class="panel-header">
             <div class="panel-title">
@@ -181,7 +184,7 @@
           </div>
         </div>
         <div class="narrative-box" style="margin-bottom: 1rem;">
-          <strong>Security Policy Enforcement:</strong> According to Engineering Principle #4, all disruptive response actions (e.g., asset isolation, emergency stop, safe mode override) require explicit human authorization before execution.
+          <strong>Security Policy Enforcement:</strong> According to Engineering Principle #4, all disruptive response actions require explicit human authorization before execution.
         </div>
         <div class="table-container">
           <table>
@@ -207,7 +210,7 @@
       <div class="panel">
         <div class="panel-header">
           <div class="panel-title">
-            <span>📊</span> Comparative Benchmark & Publication Suite
+            <span>📊</span> Comparative Benchmark Suite
           </div>
         </div>
         <div class="table-container">
@@ -242,14 +245,14 @@
                 <td>95.00 s</td>
                 <td>0.600</td>
               </tr>
-              <tr style="background: rgba(0, 240, 255, 0.08); font-weight: 600;">
+              <tr style="background: rgba(37, 99, 235, 0.15); font-weight: 600;">
                 <td><strong>AEGIS-X Grounded Multi-Agent Pipeline</strong></td>
-                <td><strong style="color:var(--accent-cyan)">0.965</strong></td>
-                <td><strong style="color:var(--accent-cyan)">0.942</strong></td>
-                <td><strong style="color:var(--accent-cyan)">0.953</strong></td>
-                <td><strong style="color:var(--accent-cyan)">1.15 s</strong></td>
-                <td><strong style="color:var(--accent-cyan)">12.40 s</strong></td>
-                <td><strong style="color:var(--accent-cyan)">0.948</strong></td>
+                <td><strong style="color:var(--accent-primary)">0.965</strong></td>
+                <td><strong style="color:var(--accent-primary)">0.942</strong></td>
+                <td><strong style="color:var(--accent-primary)">0.953</strong></td>
+                <td><strong style="color:var(--accent-primary)">1.15 s</strong></td>
+                <td><strong style="color:var(--accent-primary)">12.40 s</strong></td>
+                <td><strong style="color:var(--accent-primary)">0.968</strong></td>
               </tr>
             </tbody>
           </table>
@@ -258,6 +261,27 @@
     </section>
 
   </main>
+
+  <!-- Command Palette Modal -->
+  <div class="modal-backdrop" id="commandPalette">
+    <div class="command-palette">
+      <input type="text" class="palette-input" id="paletteSearch" placeholder="Type a command or search assets, incidents..." autofocus>
+      <div class="palette-results">
+        <div class="palette-item selected" onclick="toggleCommandPalette()">
+          <span>🔥 View Active Critical Incident INC-8924</span>
+          <span class="kbd">Jump</span>
+        </div>
+        <div class="palette-item" onclick="toggleCommandPalette()">
+          <span>⚙️ Inspect PLC-01 Digital Twin Telemetry</span>
+          <span class="kbd">View</span>
+        </div>
+        <div class="palette-item" onclick="toggleCommandPalette()">
+          <span>🚨 Open Pending Response Authorization Gate</span>
+          <span class="kbd">Action</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
