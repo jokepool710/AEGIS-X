@@ -56,6 +56,7 @@
   --motion-instant: 50ms;
   --motion-fast: 100ms;
   --motion-normal: 150ms;
+  --motion-slow: 220ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -67,6 +68,11 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
 }
 
 body {
@@ -91,6 +97,12 @@ body {
   left: 0;
   right: 0;
   z-index: 100;
+  transition: border-color var(--motion-normal) var(--ease-out), box-shadow var(--motion-normal) var(--ease-out);
+}
+
+.navbar.scrolled {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .brand {
@@ -123,6 +135,7 @@ body {
 .nav-menu {
   display: flex;
   gap: var(--space-2);
+  align-items: center;
 }
 
 .nav-link {
@@ -132,7 +145,7 @@ body {
   font-weight: 500;
   padding: 6px var(--space-3);
   border-radius: var(--radius-md);
-  transition: background-color var(--motion-fast) var(--ease-out);
+  transition: background-color var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
 }
 
 .nav-link:hover {
@@ -149,11 +162,22 @@ body {
   font-weight: 500;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background-color var(--motion-fast) var(--ease-out);
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   text-decoration: none;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .btn-primary {
@@ -191,11 +215,26 @@ body {
   padding: 8rem 2rem 4rem;
 }
 
+#heroParticles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
 .hero-content {
   position: relative;
   z-index: 2;
   text-align: center;
   max-width: 800px;
+  animation: hero-enter 360ms var(--ease-out) both;
+}
+
+@keyframes hero-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .hero-badge {
@@ -291,6 +330,7 @@ body {
   padding: 5rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  scroll-margin-top: 72px;
 }
 
 .section-header {
@@ -344,10 +384,30 @@ body {
   margin-bottom: var(--space-2);
 }
 
+.capability-card {
+  transition: border-color var(--motion-normal) var(--ease-out), box-shadow var(--motion-normal) var(--ease-out);
+}
+
+.capability-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+}
+
 .capability-card p {
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--motion-slow) var(--ease-out), transform var(--motion-slow) var(--ease-out);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Footer */
@@ -374,8 +434,92 @@ body {
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 13px;
+  transition: color var(--motion-fast) var(--ease-out);
 }
 
 .footer-links a:hover {
   color: var(--text-primary);
+}
+
+@media (max-width: 760px) {
+  .navbar {
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .nav-menu {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+  }
+
+  .hero-section {
+    min-height: 72vh;
+    padding: 8rem var(--space-4) 4rem;
+  }
+
+  .metrics-bar {
+    padding: 0 var(--space-4);
+  }
+
+  .metrics-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .content-section {
+    padding: 3.5rem var(--space-4);
+  }
+
+  .capabilities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+}
+
+@media (max-width: 420px) {
+  .metrics-row {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 10vw, 2.75rem);
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html,
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

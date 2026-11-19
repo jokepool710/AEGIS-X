@@ -13,6 +13,11 @@ const state = {
   responsePlans: [],
   telemetryStats: null,
   benchmarkResults: null,
+  dashboardRefreshInFlight: false,
+  incidentsLoading: false,
+  incidentsSignature: null,
+  graphResizeObserver: null,
+  graphResizeListener: null,
 };
 
 // Initialize Application
@@ -32,9 +37,12 @@ function setupNavigation() {
       e.preventDefault();
       const targetTab = link.getAttribute('data-tab');
       if (!targetTab) return;
+      if (state.activeTab === targetTab) return;
 
       links.forEach(l => l.classList.remove('active'));
+      links.forEach(l => l.removeAttribute('aria-current'));
       link.classList.add('active');
+      link.setAttribute('aria-current', 'page');
 
       document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
       const targetSection = document.getElementById(`${targetTab}-view`);
@@ -57,24 +65,69 @@ function setupCommandPalette() {
     }
     if (e.key === 'Escape') {
       const palette = document.getElementById('commandPalette');
-      if (palette) palette.classList.remove('active');
+      if (palette && palette.classList.contains('active')) closeCommandPalette();
     }
   });
+
+  const palette = document.getElementById('commandPalette');
+  if (palette) {
+    palette.addEventListener('click', (event) => {
+      if (event.target === palette) closeCommandPalette();
+    });
+
+    palette.addEventListener('keydown', (event) => {
+      if (event.key !== 'Tab') return;
+      const focusable = palette.querySelectorAll('input:not([disabled]), button:not([disabled])');
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    });
+  }
 }
 
 function toggleCommandPalette() {
   const palette = document.getElementById('commandPalette');
-  if (palette) {
-    palette.classList.toggle('active');
-    if (palette.classList.contains('active')) {
-      const input = document.getElementById('paletteSearch');
-      if (input) input.focus();
-    }
+  if (!palette) return;
+
+  if (palette.classList.contains('active')) {
+    closeCommandPalette();
+    return;
+  }
+
+  palette.classList.add('active');
+  palette.setAttribute('aria-hidden', 'false');
+  const trigger = document.querySelector('[data-command-palette-trigger]');
+  if (trigger) trigger.setAttribute('aria-expanded', 'true');
+  const input = document.getElementById('paletteSearch');
+  if (input) input.focus();
+}
+
+function closeCommandPalette() {
+  const palette = document.getElementById('commandPalette');
+  if (!palette) return;
+
+  palette.classList.remove('active');
+  palette.setAttribute('aria-hidden', 'true');
+  const trigger = document.querySelector('[data-command-palette-trigger]');
+  if (trigger) {
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.focus({ preventScroll: true });
   }
 }
 
 // Fetch Overview Dashboard Data
 async function loadDashboardData() {
+  if (state.dashboardRefreshInFlight) return;
+  state.dashboardRefreshInFlight = true;
+
   try {
     const res = await fetch(`${API_BASE}/status`);
     if (res.ok) {
@@ -92,6 +145,8 @@ async function loadDashboardData() {
     fetchIncidents();
   } catch (err) {
     console.warn('Backend API connection offline, using fallback state:', err);
+  } finally {
+    state.dashboardRefreshInFlight = false;
   }
 }
 
@@ -100,23 +155,39 @@ function updateTelemetryUI() {
   const storage = state.telemetryStats.storage || {};
   const eventsEl = document.getElementById('metric-events');
   const anomaliesEl = document.getElementById('metric-anomalies');
-  if (eventsEl) eventsEl.textContent = storage.total_records || '1,482,910';
-  if (anomaliesEl) anomaliesEl.textContent = storage.total_alerts || '42';
+  setTextIfChanged(eventsEl, storage.total_records ?? '1,482,910');
+  setTextIfChanged(anomaliesEl, storage.total_alerts ?? '42');
+}
+
+function setTextIfChanged(element, value) {
+  if (element && element.textContent !== String(value)) {
+    element.textContent = String(value);
+  }
 }
 
 // Fetch Incidents
 async function fetchIncidents() {
+  if (state.incidentsLoading) return;
+  state.incidentsLoading = true;
+
   try {
     const res = await fetch(`${API_BASE}/incidents`);
     if (res.ok) {
       const data = await res.json();
-      state.incidents = data.incidents || [];
-      renderIncidentsTable();
+      const incidents = data.incidents || [];
+      const signature = JSON.stringify(incidents);
+      state.incidents = incidents;
       const incEl = document.getElementById('metric-incidents');
-      if (incEl) incEl.textContent = state.incidents.length;
+      if (signature !== state.incidentsSignature) {
+        state.incidentsSignature = signature;
+        renderIncidentsTable();
+        setTextIfChanged(incEl, state.incidents.length);
+      }
     }
   } catch (err) {
     console.error('Failed to fetch incidents:', err);
+  } finally {
+    state.incidentsLoading = false;
   }
 }
 
@@ -214,7 +285,15 @@ function initAttackGraphCanvas() {
     drawGraph();
   }
 
-  window.addEventListener('resize', resize);
+  if ('ResizeObserver' in window) {
+    if (!state.graphResizeObserver) {
+      state.graphResizeObserver = new ResizeObserver(resize);
+      state.graphResizeObserver.observe(canvas.parentElement);
+    }
+  } else if (!state.graphResizeListener) {
+    state.graphResizeListener = resize;
+    window.addEventListener('resize', state.graphResizeListener, { passive: true });
+  }
   resize();
 
   function drawGraph() {
