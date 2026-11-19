@@ -71,6 +71,17 @@ MQTT sensor simulation
 5. Reproduce experiments with versioned data, configurations, and metrics.
 6. Treat end-to-end CI validation as a phase completion gate.
 
+## Frontend Design Guidance
+
+The `.design-rules` submodule contains the Apple Design Skill and its Human Interface
+Guideline references. Follow `.design-rules/SKILL.md` for design reviews and load the
+relevant files from `.design-rules/references/hig/` before giving design feedback. If the
+submodule is empty after cloning, initialize it with:
+
+```bash
+git submodule update --init --recursive
+```
+
 ## Quickstart & Local Deployment
 
 Launch the unified backend API and web interface with a single command:

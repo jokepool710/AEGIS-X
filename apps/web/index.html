@@ -9,7 +9,7 @@
 <body>
 
   <!-- Navigation Bar -->
-  <nav class="navbar">
+  <nav class="navbar" aria-label="Main navigation">
     <div class="brand">
       <div class="brand-icon">AX</div>
       <div class="brand-title">AEGIS-X</div>
@@ -17,15 +17,15 @@
     </div>
 
     <div class="nav-menu">
-      <a href="#" class="nav-link active" data-tab="dashboard">Command Center</a>
+      <a href="#" class="nav-link active" data-tab="dashboard" aria-current="page">Command Center</a>
       <a href="#" class="nav-link" data-tab="incidents">Incidents</a>
       <a href="#" class="nav-link" data-tab="cases">Case Workspace</a>
       <a href="#" class="nav-link" data-tab="response">Response Planner</a>
       <a href="#" class="nav-link" data-tab="benchmarks">Research Benchmarks</a>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 16px;">
-      <button class="btn btn-secondary" style="height: 28px; padding: 0 8px; font-size: 11px;" onclick="toggleCommandPalette()">⌘K Search</button>
+    <div class="nav-tools">
+      <button type="button" class="btn btn-secondary btn-search" data-command-palette-trigger aria-haspopup="dialog" aria-expanded="false" aria-controls="commandPalette" onclick="toggleCommandPalette()">⌘K Search</button>
       <div class="system-status">
         <div class="status-dot"></div>
         <span>Platform: <strong id="platform-phase">v1.0.0 Active</strong></span>
@@ -263,22 +263,22 @@
   </main>
 
   <!-- Command Palette Modal -->
-  <div class="modal-backdrop" id="commandPalette">
-    <div class="command-palette">
-      <input type="text" class="palette-input" id="paletteSearch" placeholder="Type a command or search assets, incidents..." autofocus>
+  <div class="modal-backdrop" id="commandPalette" aria-hidden="true">
+    <div class="command-palette" role="dialog" aria-modal="true" aria-label="Search AEGIS-X">
+      <input type="text" class="palette-input" id="paletteSearch" aria-label="Search assets and incidents" placeholder="Type a command or search assets, incidents...">
       <div class="palette-results">
-        <div class="palette-item selected" onclick="toggleCommandPalette()">
+        <button type="button" class="palette-item selected" onclick="toggleCommandPalette()">
           <span>🔥 View Active Critical Incident INC-8924</span>
           <span class="kbd">Jump</span>
-        </div>
-        <div class="palette-item" onclick="toggleCommandPalette()">
+        </button>
+        <button type="button" class="palette-item" onclick="toggleCommandPalette()">
           <span>⚙️ Inspect PLC-01 Digital Twin Telemetry</span>
           <span class="kbd">View</span>
-        </div>
-        <div class="palette-item" onclick="toggleCommandPalette()">
+        </button>
+        <button type="button" class="palette-item" onclick="toggleCommandPalette()">
           <span>🚨 Open Pending Response Authorization Gate</span>
           <span class="kbd">Action</span>
-        </div>
+        </button>
       </div>
     </div>
   </div>

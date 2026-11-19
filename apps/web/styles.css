@@ -180,7 +180,20 @@ body {
 }
 
 .nav-link.active {
-  border-left: 2px solid var(--accent-primary);
+  box-shadow: inset 2px 0 var(--accent-primary);
+}
+
+.nav-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.btn-search {
+  height: 32px;
+  padding: 0 10px;
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .system-status {
@@ -217,6 +230,12 @@ body {
 
 .view-section.active {
   display: flex;
+  animation: section-enter var(--motion-normal) var(--ease-out) both;
+}
+
+@keyframes section-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Metrics Cards Header Row */
@@ -324,6 +343,7 @@ td {
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-secondary);
+  transition: background-color var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
 }
 
 tr:hover td {
@@ -358,11 +378,22 @@ tr:hover td {
   font-weight: 500;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: background-color var(--motion-fast) var(--ease-out);
+  transition:
+    background-color var(--motion-fast) var(--ease-out),
+    border-color var(--motion-fast) var(--ease-out),
+    transform var(--motion-fast) var(--ease-out);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   font-family: var(--font-sans);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .btn-primary {
@@ -443,12 +474,17 @@ canvas#attackGraphCanvas {
   z-index: 100;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--motion-normal) var(--ease-out);
+  visibility: hidden;
+  transition:
+    opacity var(--motion-normal) var(--ease-out),
+    visibility 0s linear var(--motion-normal);
 }
 
 .modal-backdrop.active {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .command-palette {
@@ -458,6 +494,16 @@ canvas#attackGraphCanvas {
   width: 600px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity var(--motion-normal) var(--ease-out),
+    transform var(--motion-normal) var(--ease-out);
+}
+
+.modal-backdrop.active .command-palette {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .palette-input {
@@ -489,6 +535,12 @@ canvas#attackGraphCanvas {
   border-radius: var(--radius-md);
   color: var(--text-secondary);
   cursor: pointer;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  transition: background-color var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
 }
 
 .palette-item:hover, .palette-item.selected {
@@ -510,5 +562,80 @@ canvas#attackGraphCanvas {
 @media (max-width: 1024px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .navbar {
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .nav-tools {
+    margin-left: auto;
+    gap: var(--space-2);
+  }
+
+  .nav-menu {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+  }
+
+  .nav-link {
+    flex: 0 0 auto;
+  }
+
+  .main-container {
+    padding: var(--space-4);
+  }
+
+  .metrics-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .command-palette {
+    width: min(600px, calc(100vw - 24px));
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-badge {
+    display: none;
+  }
+
+  .system-status {
+    font-size: 11px;
+  }
+
+  .main-container {
+    padding: var(--space-3);
+  }
+
+  .metrics-row {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: var(--space-4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
